@@ -1,0 +1,7 @@
+{
+  "Authority": "https://login.microsoftonline.com/3aa4a235-b6e2-48d5-9195-7fcf05b459b0",
+  "ApplicationUrl": "https://localhost:47501",
+  "WebApiScope": "api://288c0a15-a807-45ee-8384-10bc33bc3779/.default",
+  "ClientId": "7c29d972-fdd3-4ec0-8325-39d4722fce8a",
+  "ClientSecret": "setup-in-user-secret"
+}
