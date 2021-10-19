@@ -165,7 +165,6 @@ namespace Equinor.ProCoSys.DbView.WebApi
 
             app.UseRouting();
 
-            app.UseCurrentBearerToken();
             app.UseAuthentication();
             app.UseCurrentUser();
             app.UseAuthorization();

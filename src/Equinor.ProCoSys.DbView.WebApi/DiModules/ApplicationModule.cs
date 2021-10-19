@@ -1,5 +1,4 @@
-﻿using Equinor.ProCoSys.DbView.WebApi.Authentication;
-using Equinor.ProCoSys.DbView.WebApi.Controllers.PbiCheckList;
+﻿using Equinor.ProCoSys.DbView.WebApi.Controllers.PbiCheckList;
 using Equinor.ProCoSys.DbView.WebApi.Misc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,8 +22,6 @@ namespace Equinor.ProCoSys.DbView.WebApi.DIModules
             // Transient - Created each time it is requested from the service container
 
             // Scoped - Created once per client request (connection)
-            services.AddScoped<Authenticator>();
-            services.AddScoped<IBearerTokenSetter>(x => x.GetRequiredService<Authenticator>());
             services.AddScoped<ITelemetryClient, ApplicationInsightsTelemetryClient>();
             services.AddScoped<IClaimsProvider, ClaimsProvider>();
             services.AddScoped<CurrentUserProvider>();
