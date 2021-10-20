@@ -9,6 +9,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{F1C39FAC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Equinor.ProCoSys.DbView.WebApi.IntegrationTests", "Tests\Equinor.ProCoSys.DbView.WebApi.IntegrationTests\Equinor.ProCoSys.DbView.WebApi.IntegrationTests.csproj", "{926BE851-54F1-4031-BF60-D3754F4B69CD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution items", "Solution items", "{9E8E2964-3334-42BC-9F31-1DD4A9EE0F8E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -10,8 +10,6 @@ namespace Equinor.ProCoSys.DbView.WebApi.DIModules
     {
         public static void AddApplicationModules(this IServiceCollection services, IConfiguration configuration)
         {
-            TimeService.SetProvider(new SystemTimeProvider());
-
             services.Configure<ApiOptions>(configuration.GetSection("ApiOptions"));
 
             services.AddHttpContextAccessor();
@@ -23,10 +21,6 @@ namespace Equinor.ProCoSys.DbView.WebApi.DIModules
 
             // Scoped - Created once per client request (connection)
             services.AddScoped<ITelemetryClient, ApplicationInsightsTelemetryClient>();
-            services.AddScoped<IClaimsProvider, ClaimsProvider>();
-            services.AddScoped<CurrentUserProvider>();
-            services.AddScoped<ICurrentUserProvider>(x => x.GetRequiredService<CurrentUserProvider>());
-            services.AddScoped<ICurrentUserSetter>(x => x.GetRequiredService<CurrentUserProvider>());
             services.AddScoped<IPbiCheckListRepository, PbiCheckListRepository>();
 
             // Singleton - Created the first time they are requested
