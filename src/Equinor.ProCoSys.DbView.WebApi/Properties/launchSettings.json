@@ -1,0 +1,13 @@
+{
+  "profiles": {
+    "Equinor.ProCoSys.DbView.WebApi": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:47501/;http://localhost:47500/"
+    }
+  }
+}
