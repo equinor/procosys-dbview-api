@@ -11,15 +11,17 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
     [TestClass]
     public class CheckListMaxAvailableTests : ClientSetup
     {
+        [TestCategory("All")]
         [TestMethod]
         public async Task A1_ShouldReturnUnauthorizedIfNotAuthenticated()
             => await CheckListTestsHelper.GetMaxAvailable(NotAuthenticatedRestClient, HttpStatusCode.Unauthorized);
 
+        [TestCategory("All")]
         [TestMethod]
         public async Task A2_ShouldReturnForbiddenIfNoAccess()
             => await CheckListTestsHelper.GetMaxAvailable(ClientWithoutAccess, HttpStatusCode.Forbidden);
 
-        //[Ignore("Very long running test. To be used during development at localhost")]
+        [TestCategory("Test")]
         [TestMethod]
         public async Task B_ShouldGetMaxAvailableIfHasAccess()
         {
@@ -31,7 +33,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
             Assert.IsTrue(model.MaxAvailable >= 2800000);
         }
 
-        //[Ignore("Very long running test. To be used during development at localhost")]
+        [TestCategory("Local")]
         [TestMethod]
         public async Task C_ShouldGetSameMaxAvailableIfHasAccess()
         {

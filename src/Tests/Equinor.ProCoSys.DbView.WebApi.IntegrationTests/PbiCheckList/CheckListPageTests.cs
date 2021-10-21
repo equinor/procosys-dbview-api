@@ -11,15 +11,17 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
     [TestClass]
     public class CheckListPageTests : ClientSetup
     {
+        [TestCategory("All")]
         [TestMethod]
         public async Task A1_ShouldReturnUnauthorizedIfNotAuthenticated()
             => await CheckListTestsHelper.GetCheckListPage(NotAuthenticatedRestClient, 0, 10, HttpStatusCode.Unauthorized);
         
+        [TestCategory("All")]
         [TestMethod]
         public async Task A2_ShouldReturnForbiddenIfNoAccess()
             => await CheckListTestsHelper.GetCheckListPage(ClientWithoutAccess, 0, 10, HttpStatusCode.Forbidden);
 
-        //[Ignore("Very long running test. To be used during development at localhost")]
+        [TestCategory("Test")]
         [TestMethod]
         public async Task E_ShouldGetSmallCheckListPagesIfHasAccess()
         {
@@ -32,7 +34,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
             AssertModel(page0, itemsPerPage);
         }
 
-        //[Ignore("Very long running test. To be used during development at localhost")]
+        [TestCategory("Test")]
         [TestMethod]
         public async Task F_ShouldGetBigCheckListPagesIfHasAccess()
         {
@@ -45,7 +47,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
             AssertModel(page0, itemsPerPage);
         }
         
-        //[Ignore("Very long running test. To be used during development at localhost")]
+        [TestCategory("Test")]
         [TestMethod]
         public async Task C_ShouldGetZeroCheckListsFromPageBehindLastPageIfHasAccess()
         {
@@ -59,7 +61,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
             AssertModel(prevPage, 0);
         }
 
-        //[Ignore("Very long running test. To be used during development at localhost")]
+        [TestCategory("Local")]
         [TestMethod]
         public async Task B1_ShouldAllPagedCheckListsIfHasAccess()
         {
@@ -81,7 +83,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
             Assert.IsTrue(page >= 28);
         }
 
-        //[Ignore("Very long running test. To be used during development at localhost")]
+        [TestCategory("Local")]
         [TestMethod]
         public async Task B2_ShouldGetRandomPagedCheckListsIfHasAccess()
         {
@@ -107,7 +109,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
             }
         }
 
-        //[Ignore("Very long running test. To be used during development at localhost")]
+        [TestCategory("Local")]
         [TestMethod]
         public async Task D_ShouldGetSameCheckListsPageIfHasAccess()
         {
