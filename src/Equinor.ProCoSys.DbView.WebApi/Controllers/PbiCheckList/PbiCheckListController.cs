@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Equinor.ProCoSys.DbView.WebApi.Controllers.PbiCheckList
 {
-    [Authorize]
+    [Authorize(Roles = "DbView.CheckList.Read.All")]
     [ApiController]
     [Route("api/DbView/PbiCheckList")]
     public class PbiCheckListController : ControllerBase
