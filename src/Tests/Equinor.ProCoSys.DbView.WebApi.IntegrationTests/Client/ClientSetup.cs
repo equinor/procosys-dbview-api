@@ -5,10 +5,12 @@
         public ClientSetup()
         {
             NotAuthenticatedRestClient = new RestClient(1);
-            AuthenticatedRestClient = RestClient.GetAuthenticatedClient().Result;
+            ClientWithAccess = RestClient.GetAuthenticatedClient("TestClient1").Result;
+            ClientWithoutAccess = RestClient.GetAuthenticatedClient("TestClient2").Result;
         }
 
         protected RestClient NotAuthenticatedRestClient;
-        protected RestClient AuthenticatedRestClient;
+        protected RestClient ClientWithAccess;
+        protected RestClient ClientWithoutAccess;
     }
 }
