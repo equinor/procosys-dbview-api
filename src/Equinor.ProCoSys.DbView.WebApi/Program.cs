@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
 using Azure.Identity;
+using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
@@ -39,6 +42,13 @@ namespace Equinor.ProCoSys.DbView.WebApi
                                     refreshOptions.SetCacheExpiration(TimeSpan.FromMinutes(5));
                                 });
                         });
+
+                        //Download Oracle wallet file
+                        var blobContainerClient = new BlobContainerClient(settings["WalletStorageAccountConnectionString"], settings["WalletContainerName"]);
+                        var blobClient = blobContainerClient.GetBlobClient(settings["WalletBlobName"]);
+                        var downloadPath = Directory.GetParent(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName)).FullName + @"\cwallet.sso";
+                        blobClient.DownloadTo(downloadPath);
+
                     }
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
