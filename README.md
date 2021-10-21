@@ -12,6 +12,7 @@ Typical settings that should not be commited are:
 * Keys
 * URLs
 * Other secrets
+
 To use local settings on developers sandbox: Set UseAzureAppConfiguration to false, and fill UserSecret file with necessary empty values in appsettings.json
 To use settings in an Azure App Configuration (and Azure Keyvault): Set UseAzureAppConfiguration to true, and set ConnectionStrings:AppConfig in UserSecret file to a valid Azure App Configuration connectionstring.
 
