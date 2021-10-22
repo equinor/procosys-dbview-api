@@ -5,6 +5,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.Client
     [TestClass]
     public class ClientTests : ClientSetup
     {
+        [TestCategory("All")]
         [TestMethod]
         public void ShouldCreateNotAuthenticatedClient()
         {
@@ -12,11 +13,20 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.Client
             Assert.IsNull(NotAuthenticatedRestClient.ClientId);
         }
 
+        [TestCategory("All")]
         [TestMethod]
-        public void ShouldCreateAuthenticatedClient()
+        public void ShouldCreateAuthenticatedClientWithAccess()
         {
-            Assert.IsTrue(AuthenticatedRestClient.IsAuthenticated);
-            Assert.IsNotNull(AuthenticatedRestClient.ClientId);
+            Assert.IsTrue(ClientWithAccess.IsAuthenticated);
+            Assert.IsNotNull(ClientWithAccess.ClientId);
+        }
+
+        [TestCategory("All")]
+        [TestMethod]
+        public void ShouldCreateAuthenticatedClientWithoutAccess()
+        {
+            Assert.IsTrue(ClientWithoutAccess.IsAuthenticated);
+            Assert.IsNotNull(ClientWithoutAccess.ClientId);
         }
     }
 }

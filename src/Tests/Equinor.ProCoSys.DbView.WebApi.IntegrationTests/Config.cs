@@ -25,8 +25,8 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests
             }
         }
 
-        public static string ClientId => Instance._config["ClientId"];
-        public static string ClientSecret => Instance._config["ClientSecret"];
+        public static string TestClientId(string clientConfigKey) => Instance._config[$"{clientConfigKey}:ClientId"];
+        public static string TestClientSecret(string clientConfigKey) => Instance._config[$"{clientConfigKey}:ClientSecret"];
         public static string Authority => Instance._config["Authority"];
         public static string WebApiScope => Instance._config["WebApiScope"];
         public static string ApplicationUrl => Instance._config["ApplicationUrl"];
