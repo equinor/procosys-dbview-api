@@ -142,10 +142,10 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.PbiCheckList
         private (List<CheckListInstance>, TimeSpan) GetCheckListInstances(int currentPage, int itemsPerPage)
         {
             DataTable result = null;
-            // Bug Found in view Oct 12 2021. Checklist id seem to appear in different commpkgs/mcpkgs. Need to be included in order by 
+            // After bugfix Oct 02 2021 in PBI$CHECKLIST view, checklist id is unique pr row: ORDER BY CHECKLIST_ID should be sufficient for pagination
             var strSql =
                 $@"{_checkListQuery}
-                    ORDER BY CHECKLIST_ID,COMMPKGNO,MCPKGNO
+                    ORDER BY CHECKLIST_ID
                     OFFSET {currentPage * itemsPerPage} ROWS FETCH NEXT {itemsPerPage} ROWS ONLY";
 
             var oracleDatabase = new OracleDb(_connectionString);

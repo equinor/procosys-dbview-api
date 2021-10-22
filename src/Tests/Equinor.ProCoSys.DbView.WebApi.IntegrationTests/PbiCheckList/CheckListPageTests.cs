@@ -186,15 +186,14 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
             Assert.IsNotNull(model);
             Assert.IsNotNull(model.CheckLists);
             
-            // The view is modified Oct 7 2021 to return one row pr checklist id
-            // Bug Found in view Oct 12 2021. Checklist id seem to appear in different commpkgs/mcpkgs.
-            var allItems = model.CheckLists.Select(c => $"{c.CheckList_Id}|{c.CommPkgNo}|{c.McPkgNo}").ToList();
-            var distinctItems = allItems.Distinct().ToList();
-            if (allItems.Count != distinctItems.Count)
+            // The view is modified Oct 2021 to return one row pr checklist id
+            var allIds = model.CheckLists.Select(c => c.CheckList_Id).ToList();
+            var distinctIds = allIds.Distinct().ToList();
+            if (allIds.Count != distinctIds.Count)
             {
-                foreach (var item in distinctItems)
+                foreach (var item in distinctIds)
                 {
-                    var possibleDuplicate = allItems.Where(dup => dup == item);
+                    var possibleDuplicate = allIds.Where(dup => dup == item);
                     if (possibleDuplicate.Count() > 1)
                     {
                         Console.WriteLine($"Duplicate item: {item}");
@@ -202,7 +201,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
                 }
             }
 
-            Assert.AreEqual(allItems.Count, distinctItems.Count);
+            Assert.AreEqual(allIds.Count, distinctIds.Count);
 
             if (assertCount)
             {
