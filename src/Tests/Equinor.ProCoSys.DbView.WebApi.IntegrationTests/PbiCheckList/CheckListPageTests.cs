@@ -63,9 +63,9 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
 
         [TestCategory("Local")]
         [TestMethod]
-        public async Task B1_ShouldAllPagedCheckListsIfHasAccess()
+        public async Task B1_ShouldGetAllPagedCheckListsIfHasAccess()
         {
-            const int itemsPerPage = 100000;
+            const int itemsPerPage = 500000;
             var getNextPage = true;
             var page = 0;
 
