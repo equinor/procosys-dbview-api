@@ -11,25 +11,31 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
     [TestClass]
     public class CheckListMaxAvailableTests : ClientSetup
     {
+        [TestCategory("All")]
         [TestMethod]
         public async Task A1_ShouldReturnUnauthorizedIfNotAuthenticated()
             => await CheckListTestsHelper.GetMaxAvailable(NotAuthenticatedRestClient, HttpStatusCode.Unauthorized);
 
-        //[Ignore("Very long running test. To be used during development at localhost")]
+        [TestCategory("All")]
         [TestMethod]
-        public async Task B_ShouldGetMaxAvailable()
+        public async Task A2_ShouldReturnForbiddenIfNoAccess()
+            => await CheckListTestsHelper.GetMaxAvailable(ClientWithoutAccess, HttpStatusCode.Forbidden);
+
+        [TestCategory("Test")]
+        [TestMethod]
+        public async Task B_ShouldGetMaxAvailableIfHasAccess()
         {
             PbiCheckListMaxAvailableModel model;
             TimeSpan timeUsed;
-            (model, timeUsed) = await GetMaxAvailable();
+            (model, timeUsed) = await GetMaxAvailableUsingClientWithAccess();
 
             ShowModel("GetMaxAvailable", model, timeUsed);
             Assert.IsTrue(model.MaxAvailable >= 2800000);
         }
 
-        //[Ignore("Very long running test. To be used during development at localhost")]
+        [TestCategory("Local")]
         [TestMethod]
-        public async Task C_ShouldGetSameMaxAvailable()
+        public async Task C_ShouldGetSameMaxAvailableIfHasAccess()
         {
             var results = new List<long>();
 
@@ -37,7 +43,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
             {
                 PbiCheckListMaxAvailableModel model;
                 TimeSpan timeUsed;
-                (model, timeUsed) = await GetMaxAvailable();
+                (model, timeUsed) = await GetMaxAvailableUsingClientWithAccess();
 
                 ShowModel($"GetMaxAvailable, try {idx}", model, timeUsed);
                 results.Add(model.MaxAvailable);
@@ -52,11 +58,11 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
             }
         }
 
-        private async Task<(PbiCheckListMaxAvailableModel, TimeSpan)> GetMaxAvailable()
+        private async Task<(PbiCheckListMaxAvailableModel, TimeSpan)> GetMaxAvailableUsingClientWithAccess()
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();
-            var checkListModel = await CheckListTestsHelper.GetMaxAvailable(AuthenticatedRestClient);
+            var checkListModel = await CheckListTestsHelper.GetMaxAvailable(ClientWithAccess);
             stopWatch.Stop();
             return (checkListModel, stopWatch.Elapsed);
         }

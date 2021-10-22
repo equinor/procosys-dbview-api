@@ -22,22 +22,23 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests
             Console.WriteLine($@"Testing against {Client.BaseAddress.AbsoluteUri}");
         }
 
-        public static async Task<RestClient> GetAuthenticatedClient()
+        public static async Task<RestClient> GetAuthenticatedClient(string clientConfigKey)
         {
             // big timeout for Admin client because testing slow endpoint
             var restClient = new RestClient(15);
-            await restClient.AuthenticateAsync();
+            await restClient.AuthenticateAsync(clientConfigKey);
             return restClient;
         }
 
-        private async Task AuthenticateAsync()
+        private async Task AuthenticateAsync(string clientConfigKey)
         {
-            ClientId = Config.ClientId;
+            ClientId = Config.TestClientId(clientConfigKey);
 
             Console.WriteLine($@"Authenticating against {Config.Authority} as {ClientId}");
+            var clientSecret = Config.TestClientSecret(clientConfigKey);
             var confidentialClientApplication = ConfidentialClientApplicationBuilder
                 .Create(ClientId)
-                .WithClientSecret(Config.ClientSecret)
+                .WithClientSecret(clientSecret)
                 .WithAuthority(new Uri(Config.Authority))
                 .Build();
 

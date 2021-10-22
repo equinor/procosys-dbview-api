@@ -11,53 +11,59 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
     [TestClass]
     public class CheckListPageTests : ClientSetup
     {
+        [TestCategory("All")]
         [TestMethod]
         public async Task A1_ShouldReturnUnauthorizedIfNotAuthenticated()
             => await CheckListTestsHelper.GetCheckListPage(NotAuthenticatedRestClient, 0, 10, HttpStatusCode.Unauthorized);
-
-        //[Ignore("Very long running test. To be used during development at localhost")]
+        
+        [TestCategory("All")]
         [TestMethod]
-        public async Task E_ShouldGetSmallCheckListPages()
+        public async Task A2_ShouldReturnForbiddenIfNoAccess()
+            => await CheckListTestsHelper.GetCheckListPage(ClientWithoutAccess, 0, 10, HttpStatusCode.Forbidden);
+
+        [TestCategory("Test")]
+        [TestMethod]
+        public async Task E_ShouldGetSmallCheckListPagesIfHasAccess()
         {
             const int itemsPerPage = 100;
             TimeSpan timeUsed;
             PbiCheckListModel page0;
 
-            (page0, timeUsed) = await GetPage(0, itemsPerPage);
+            (page0, timeUsed) = await GetPageUsingClientWithAccess(0, itemsPerPage);
             ShowModel("Page 0", page0, timeUsed);
             AssertModel(page0, itemsPerPage);
         }
 
-        //[Ignore("Very long running test. To be used during development at localhost")]
+        [TestCategory("Test")]
         [TestMethod]
-        public async Task F_ShouldGetBigCheckListPages()
+        public async Task F_ShouldGetBigCheckListPagesIfHasAccess()
         {
             const int itemsPerPage = 500000;
             TimeSpan timeUsed;
             PbiCheckListModel page0;
 
-            (page0, timeUsed) = await GetPage(0, itemsPerPage);
+            (page0, timeUsed) = await GetPageUsingClientWithAccess(0, itemsPerPage);
             ShowModel("Page 0", page0, timeUsed);
             AssertModel(page0, itemsPerPage);
         }
         
-        //[Ignore("Very long running test. To be used during development at localhost")]
+        [TestCategory("Test")]
         [TestMethod]
-        public async Task C_ShouldGetZeroCheckListsFromPageBehindLastPage()
+        public async Task C_ShouldGetZeroCheckListsFromPageBehindLastPageIfHasAccess()
         {
             const int itemsPerPage = 100000;
             TimeSpan timeUsed;
             PbiCheckListModel prevPage;
             var page = 40;
 
-            (prevPage, timeUsed) = await GetPage(page, itemsPerPage);
+            (prevPage, timeUsed) = await GetPageUsingClientWithAccess(page, itemsPerPage);
             ShowModel($"Page {page}", prevPage, timeUsed);
             AssertModel(prevPage, 0);
         }
 
-        //[Ignore("Very long running test. To be used during development at localhost")]
+        [TestCategory("Local")]
         [TestMethod]
-        public async Task B1_ShouldAllPagedCheckLists()
+        public async Task B1_ShouldAllPagedCheckListsIfHasAccess()
         {
             const int itemsPerPage = 100000;
             var getNextPage = true;
@@ -65,7 +71,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
 
             while (getNextPage)
             {
-                var (nextPage, timeUsed) = await GetPage(page, itemsPerPage);
+                var (nextPage, timeUsed) = await GetPageUsingClientWithAccess(page, itemsPerPage);
                 
                 ShowModel($"Page {page}", nextPage, timeUsed);
                 AssertModel(nextPage, itemsPerPage, false);
@@ -77,15 +83,15 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
             Assert.IsTrue(page >= 28);
         }
 
-        //[Ignore("Very long running test. To be used during development at localhost")]
+        [TestCategory("Local")]
         [TestMethod]
-        public async Task B2_ShouldGetRandomPagedCheckLists()
+        public async Task B2_ShouldGetRandomPagedCheckListsIfHasAccess()
         {
             const int itemsPerPage = 100000;
             TimeSpan timeUsed;
             PbiCheckListModel prevPage;
 
-            (prevPage, timeUsed) = await GetPage(0, itemsPerPage);
+            (prevPage, timeUsed) = await GetPageUsingClientWithAccess(0, itemsPerPage);
             ShowModel("Page 0", prevPage, timeUsed);
             AssertModel(prevPage, itemsPerPage);
             
@@ -93,7 +99,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
             foreach (var page in pages)
             {
                 PbiCheckListModel nextPage;
-                (nextPage, timeUsed) = await GetPage(page, itemsPerPage);
+                (nextPage, timeUsed) = await GetPageUsingClientWithAccess(page, itemsPerPage);
                 ShowModel($"Page {page}", nextPage, timeUsed);
                 AssertModel(nextPage, itemsPerPage);
 
@@ -103,23 +109,23 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
             }
         }
 
-        //[Ignore("Very long running test. To be used during development at localhost")]
+        [TestCategory("Local")]
         [TestMethod]
-        public async Task D_ShouldGetSameCheckListsPage()
+        public async Task D_ShouldGetSameCheckListsPageIfHasAccess()
         {
             const int page = 0;
             const int itemsPerPage = 100000;
             TimeSpan timeUsed;
             PbiCheckListModel prevPage;
 
-            (prevPage, timeUsed) = await GetPage(0, itemsPerPage);
+            (prevPage, timeUsed) = await GetPageUsingClientWithAccess(0, itemsPerPage);
             ShowModel("Page 0", prevPage, timeUsed);
             AssertModel(prevPage, itemsPerPage);
 
             for (var idx = 1; idx < 5; idx++)
             {
                 PbiCheckListModel nextPage;
-                (nextPage, timeUsed) = await GetPage(page, itemsPerPage);
+                (nextPage, timeUsed) = await GetPageUsingClientWithAccess(page, itemsPerPage);
                 ShowModel($"Page {page}, try #{idx}", nextPage, timeUsed);
                 AssertModel(nextPage, itemsPerPage);
 
@@ -152,11 +158,11 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
             Assert.AreEqual(idsPrevPage.Count + idsNextPage.Count, allDistinctIds.Count());
         }
 
-        private async Task<(PbiCheckListModel, TimeSpan)> GetPage(int currentPage, int itemsPerPage)
+        private async Task<(PbiCheckListModel, TimeSpan)> GetPageUsingClientWithAccess(int currentPage, int itemsPerPage)
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();
-            var checkListModel = await CheckListTestsHelper.GetCheckListPage(AuthenticatedRestClient, currentPage, itemsPerPage);
+            var checkListModel = await CheckListTestsHelper.GetCheckListPage(ClientWithAccess, currentPage, itemsPerPage);
             stopWatch.Stop();
             return (checkListModel, stopWatch.Elapsed);
         }
@@ -180,15 +186,14 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
             Assert.IsNotNull(model);
             Assert.IsNotNull(model.CheckLists);
             
-            // The view is modified Oct 7 2021 to return one row pr checklist id
-            // Bug Found in view Oct 12 2021. Checklist id seem to appear in different commpkgs/mcpkgs.
-            var allItems = model.CheckLists.Select(c => $"{c.CheckList_Id}|{c.CommPkgNo}|{c.McPkgNo}").ToList();
-            var distinctItems = allItems.Distinct().ToList();
-            if (allItems.Count != distinctItems.Count)
+            // The view is modified Oct 2021 to return one row pr checklist id
+            var allIds = model.CheckLists.Select(c => c.CheckList_Id).ToList();
+            var distinctIds = allIds.Distinct().ToList();
+            if (allIds.Count != distinctIds.Count)
             {
-                foreach (var item in distinctItems)
+                foreach (var item in distinctIds)
                 {
-                    var possibleDuplicate = allItems.Where(dup => dup == item);
+                    var possibleDuplicate = allIds.Where(dup => dup == item);
                     if (possibleDuplicate.Count() > 1)
                     {
                         Console.WriteLine($"Duplicate item: {item}");
@@ -196,7 +201,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
                 }
             }
 
-            Assert.AreEqual(allItems.Count, distinctItems.Count);
+            Assert.AreEqual(allIds.Count, distinctIds.Count);
 
             if (assertCount)
             {
