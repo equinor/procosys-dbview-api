@@ -57,7 +57,7 @@ stages:
       rootFolderOrFile: '$(Build.BinariesDirectory)/build'
       solution : '**/*.sln'
       sourceFolder: '$(System.DefaultWorkingDirectory)/$(projectName)/bin/$(buildConfiguration)'
-      targetFolder: '$(Build.BinariesDirectory)/build/App_Data/jobs/continuous/$(projectName)'
+      targetFolder: '$(Build.BinariesDirectory)/build/App_Data/$(projectName)'
       versionSpec: '5.11.0'
       projectName: '$(projectName)'
   
