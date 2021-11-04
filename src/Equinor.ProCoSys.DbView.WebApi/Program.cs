@@ -46,7 +46,7 @@ namespace Equinor.ProCoSys.DbView.WebApi
                         //Download Oracle wallet file
                         var blobContainerClient = new BlobContainerClient(settings["WalletStorageAccountConnectionString"], settings["WalletContainerName"]);
                         var blobClient = blobContainerClient.GetBlobClient(settings["WalletBlobName"]);
-                        var downloadPath = Directory.GetParent(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName)).FullName + @"\cwallet.sso";
+                        var downloadPath = settings["WalletDownloadLocation"]; 
                         blobClient.DownloadTo(downloadPath);
 
                     }
