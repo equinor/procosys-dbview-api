@@ -60,6 +60,12 @@ stages:
       targetFolder: '$(Build.BinariesDirectory)/build/App_Data/$(projectName)'
       versionSpec: '5.11.0'
       projectName: '$(projectName)'
+      searchFolder: '$(System.DefaultWorkingDirectory)'
+      testSelector: 'testAssemblies'
+      testAssemblyVer2: |
+              **\*Tests.dll
+              **\*Specs.dll
+              !**\obj\**      
   
 
 
