@@ -1,0 +1,72 @@
+trigger: none
+
+name: $(date:yyyyMMdd)$(rev:.r)
+
+resources:  
+  repositories:
+  - repository: self
+  - repository: templates
+    type: github
+    name: equinor/procosys-infra
+    endpoint: 'equinor'
+    ref: infra/86649-download-wallet-file
+
+
+variables:
+  - template: src/variables/global-variables.yml@templates
+  - template: src/resources/dbview/dbview-variables.yml@templates
+
+  - name: 'buildPlatform'
+    value: 'Any CPU'    
+  - name: 'buildConfiguration'
+    value: 'Release'
+  - name: 'projectName'
+    value: 'dbview'
+
+stages:
+# build_stage
+- stage: build
+  displayName: 'Build'
+  variables:
+    envName: 'build'
+    envGroup: '$(globalPrefix)-$(fullAppName)-${{ variables.envName }}'
+  jobs:
+  - template: src/resources/dbview/jobs/build.yml@templates
+    parameters:
+      dependsOn: ''
+      envGroup: '${{ variables.envGroup }}'
+      deploymentName: 'build'
+      serviceConnection: '${{ variables.nonProdServiceConnection }}'
+      archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+      archiveType: 'zip'
+      artifactName: 'drop'
+      cleanTargetFolder: false
+      command: 'restore'
+      configuration: '$(buildConfiguration)'
+      contents: '**'
+      feedsToUse: 'config'
+      flattenFolders: false
+      includeRootFolder: false
+      nugetConfigPath: 'nuget.config'
+      overWrite: false
+      pathToPublish: '$(Build.ArtifactStagingDirectory)'
+      platform: '$(buildPlatform)'
+      preserveTimestamp: false
+      publishLocation: 'Container'
+      replaceExistingArchive: true
+      rootFolderOrFile: '$(Build.BinariesDirectory)/build'
+      solution : '**/*.sln'
+      sourceFolder: '$(System.DefaultWorkingDirectory)/$(projectName)/bin/$(buildConfiguration)'
+      targetFolder: '$(Build.BinariesDirectory)/build/App_Data/jobs/continuous/$(projectName)'
+      versionSpec: '5.11.0'
+      projectName: '$(projectName)'
+  
+
+
+
+#- task: VSBuild@1
+#  inputs:
+#    solution: '$(solution)'
+#    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
+#    platform: '$(buildPlatform)'
+#    configuration: '$(buildConfiguration)'
