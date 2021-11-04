@@ -9,7 +9,7 @@ resources:
     type: github
     name: equinor/procosys-infra
     endpoint: 'equinor'
-    ref: infra/86649-download-wallet-file
+    ref: infra/86651_Create_pipline_for_DbView_Api
 
 
 variables:
@@ -26,7 +26,7 @@ variables:
 stages:
 # build_stage
 - stage: build
-  displayName: 'Build'
+  displayName: 'Build and test'
   variables:
     envName: 'build'
     envGroup: '$(globalPrefix)-$(fullAppName)-${{ variables.envName }}'
