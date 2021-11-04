@@ -9,7 +9,7 @@ resources:
     type: github
     name: equinor/procosys-infra
     endpoint: 'equinor'
-    ref: infra/86651_Create_pipline_for_DbView_Api
+    ref: 86651_Create_pipline_for_DbView_Api
 
 
 variables:
