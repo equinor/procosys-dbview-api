@@ -47,7 +47,7 @@ stages:
       feedsToUse: 'config'
       flattenFolders: false
       includeRootFolder: false
-      nugetConfigPath: 'nuget.config'
+      nugetConfigPath: 'src/nuget.config'
       overWrite: false
       pathToPublish: '$(Build.ArtifactStagingDirectory)'
       platform: '$(buildPlatform)'
