@@ -40,6 +40,7 @@ stages:
       archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
       archiveType: 'zip'
       artifactName: 'WebApi'
+      msbuildArgs: /p:DeployOnBuild=true /p:DeployDefaultTarget=WebPublish /p:WebPublishMethod=FileSystem /p:publishUrl="$(Agent.TempDirectory)\WebAppContent\\" /p:MarkWebConfigAssistFilesAsExclude=false /p:TransformWebConfigEnabled=True /p:AutoParameterizationWebConfigConnectionStrings=false
       cleanTargetFolder: false
       command: 'restore'
       configuration: '$(buildConfiguration)'
