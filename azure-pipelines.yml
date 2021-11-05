@@ -52,7 +52,7 @@ stages:
       nugetConfigPath: 'src/nuget.config'
       overWrite: false
       pathToPublish: '$(Build.ArtifactStagingDirectory)'
-      pathToPublishTest: '$(System.DefaultWorkingDirectory)/WebApi.IntegrationTests/bin/Azure'      
+      pathToPublishTest: '$(System.DefaultWorkingDirectory)/WebApi.IntegrationTests/bin/Release'
       platform: '$(buildPlatform)'
       preserveTimestamp: false
       publishLocation: 'Container'
