@@ -39,7 +39,7 @@ stages:
       serviceConnection: '${{ variables.nonProdServiceConnection }}'
       archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
       archiveType: 'zip'
-      artifactName: 'drop'
+      artifactName: 'WebApi'
       cleanTargetFolder: false
       command: 'restore'
       configuration: '$(buildConfiguration)'
