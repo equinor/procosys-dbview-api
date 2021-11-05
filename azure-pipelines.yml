@@ -26,7 +26,7 @@ variables:
 stages:
 # build_stage
 - stage: build
-  displayName: 'Build and test'
+  displayName: 'Build'
   variables:
     envName: 'build'
     envGroup: '$(globalPrefix)-$(fullAppName)-${{ variables.envName }}'
@@ -60,13 +60,7 @@ stages:
       targetFolder: '$(Build.BinariesDirectory)/build/App_Data/$(projectName)'
       versionSpec: '5.11.0'
       projectName: '$(projectName)'
-      searchFolder: '$(System.DefaultWorkingDirectory)'
-      testSelector: 'testAssemblies'
-      testAssemblyVer2: |
-              **\*Tests.dll
-              **\*Specs.dll
-              !**\obj\**      
-  
+
 
 
 
