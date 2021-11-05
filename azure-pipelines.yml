@@ -54,7 +54,7 @@ stages:
       preserveTimestamp: false
       publishLocation: 'Container'
       replaceExistingArchive: true
-      rootFolderOrFile: '$(Build.BinariesDirectory)/build'
+      rootFolderOrFile: '$(Agent.TempDirectory)/WebAppContent'
       solution : '**/*.sln'
       sourceFolder: '$(System.DefaultWorkingDirectory)/$(projectName)/bin/$(buildConfiguration)'
       targetFolder: '$(Build.BinariesDirectory)/build/App_Data/$(projectName)'
