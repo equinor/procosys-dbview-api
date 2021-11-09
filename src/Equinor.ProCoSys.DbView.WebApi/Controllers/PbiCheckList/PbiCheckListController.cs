@@ -29,14 +29,14 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.PbiCheckList
         /// <summary>
         /// POC! Get all CheckList records in PBI$CHECKLIST view (Test and Prod environment only) POC!
         /// </summary>
-        /// <param name="cutoffDate">Get records changed after given cutoffDate. Default = null will return all</param>
         /// <param name="currentPage">Current page to get. Default is 0 (first page)</param>
         /// <param name="itemsPerPage">Number of items pr page. Default is 100000</param>
-        /// <param name="max">Max records to return. For swagger testing to don't freeze swagger. Default = 0 will return all</param>
+        /// <param name="cutoffDate">Get records changed after given cutoffDate. Default = null will return all</param>
+        /// <param name="max">Max records to return. For swagger testing to avoid freezing swagger. Default = 0 will return all</param>
         /// <remarks>This is a POC. Can be changed or removed at any time</remarks>
         /// <response code="200">OK</response>
         [HttpGet]
-        public PbiCheckListModel GetPage(DateTime? cutoffDate = null, int currentPage = 0, int itemsPerPage = 100000, int max = 0)
+        public PbiCheckListModel GetPage(int currentPage = 0, int itemsPerPage = 100000, DateTime? cutoffDate = null, int max = 0)
         {
             var model = _repo.GetPage(cutoffDate, currentPage, itemsPerPage, max);
             return model;
