@@ -16,8 +16,9 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.PbiCheckList
         private readonly string _connectionString;
         private readonly string _checkListUrlFormat;
 
-        private readonly string _checkListQuery =
-            @"SELECT DISTINCT CHECKLIST_ID,
+        private const string UpdatedDateColumn = "UPDATED_AT_DATE";
+        private static readonly string s_checkListQuery =
+            $@"SELECT DISTINCT CHECKLIST_ID,
                             PROJECTSCHEMA,
                             PROJECT,
                             TAGNO,
@@ -28,7 +29,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.PbiCheckList
                             RESPONSIBLE,
                             STATUS,
                             CREATED_AT_DATE,
-                            UPDATED_AT_DATE,
+                            {UpdatedDateColumn},
                             FACILITY,
                             COMMPKGNO,
                             MCPKGNO,
@@ -50,9 +51,9 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.PbiCheckList
             _checkListUrlFormat = $"{mainUrl}/{{PROJECTSCHEMA}}/Completion/TagCheck/Form/Main/Index?id={{TAGCHECK_ID}}";
         }
 
-        public PbiCheckListMaxAvailableModel GetMaxAvailable()
+        public PbiCheckListMaxAvailableModel GetMaxAvailable(DateTime? cutoffDate)
         {
-            var (maxAvailable, timeUsed) = CountMaxAvailable();
+            var (maxAvailable, timeUsed) = CountMaxAvailable(cutoffDate);
 
             _logger.LogInformation($"Found {maxAvailable} records in PBI$CHECKLIST during {FormatTimeSpan(timeUsed)}");
             return new PbiCheckListMaxAvailableModel
@@ -62,9 +63,9 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.PbiCheckList
             };
         }
 
-        public PbiCheckListModel GetPage(int currentPage, int itemsPerPage, int takeMax = 0)
+        public PbiCheckListModel GetPage(DateTime? cutoffDate, int currentPage, int itemsPerPage, int takeMax = 0)
         {
-            var (checkLists, timeUsed) = GetCheckListInstances(currentPage, itemsPerPage);
+            var (checkLists, timeUsed) = GetCheckListInstances(cutoffDate, currentPage, itemsPerPage);
             _logger.LogInformation($"Got {checkLists.Count} records from PBI$CHECKLIST, page {currentPage}, pagesize {itemsPerPage} during {FormatTimeSpan(timeUsed)}");
 
             return new PbiCheckListModel
@@ -117,18 +118,26 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.PbiCheckList
         }
 
 
-        private (long, TimeSpan) CountMaxAvailable()
+        private (long, TimeSpan) CountMaxAvailable(DateTime? cutoffDate)
         {
             DataTable result = null;
-            var strSql = $@"SELECT COUNT(*) AS COUNT_ALL FROM ({_checkListQuery})";
             var oracleDatabase = new OracleDb(_connectionString);
             try
             {
+                var strSql = $@"SELECT COUNT(*) AS COUNT_ALL FROM ({s_checkListQuery})";
+                var message = "Counting records in PBI$CHECKLIST";
+                if (cutoffDate.HasValue)
+                {
+                    message += $", using cutoff date={cutoffDate.Value}";
+                    strSql = AddFilterToSql(strSql, cutoffDate.Value);
+                }
+                _logger.LogInformation(message);
+                
                 var stopWatch = new Stopwatch();
                 stopWatch.Start();
-                _logger.LogInformation("Counting records in PBI$CHECKLIST");
                 result = oracleDatabase.QueryDataTable(strSql);
                 stopWatch.Stop();
+                
                 var count = Convert.ToInt64(result.Rows[0]["COUNT_ALL"]);
                 return (count, stopWatch.Elapsed);
             }
@@ -139,24 +148,32 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.PbiCheckList
             }
         }
 
-        private (List<CheckListInstance>, TimeSpan) GetCheckListInstances(int currentPage, int itemsPerPage)
+        private (List<CheckListInstance>, TimeSpan) GetCheckListInstances(DateTime? cutoffDate, int currentPage, int itemsPerPage)
         {
             DataTable result = null;
             // After bugfix Oct 02 2021 in PBI$CHECKLIST view, checklist id is unique pr row: ORDER BY CHECKLIST_ID should be sufficient for pagination
-            var strSql =
-                $@"{_checkListQuery}
-                    ORDER BY CHECKLIST_ID
-                    OFFSET {currentPage * itemsPerPage} ROWS FETCH NEXT {itemsPerPage} ROWS ONLY";
 
             var oracleDatabase = new OracleDb(_connectionString);
             try
             {
+                var strSql = s_checkListQuery;
+                var message = $"Getting {itemsPerPage} records at page {currentPage} from PBI$CHECKLIST";
+                if (cutoffDate.HasValue)
+                {
+                    message += $", using cutoff date={cutoffDate.Value}";
+                    strSql = AddFilterToSql(strSql, cutoffDate.Value);
+                }
+                strSql += 
+                    $@" ORDER BY CHECKLIST_ID
+                    OFFSET {currentPage * itemsPerPage} ROWS FETCH NEXT {itemsPerPage} ROWS ONLY";
+                _logger.LogInformation(message);
+                
                 var stopWatch = new Stopwatch();
                 stopWatch.Start();
-                _logger.LogInformation($"Getting {itemsPerPage} records at page {currentPage} from PBI$CHECKLIST");
                 result = oracleDatabase.QueryDataTable(strSql);
                 var checkListInstances = GetCheckListInstances(result);
                 stopWatch.Stop();
+                
                 return (checkListInstances, stopWatch.Elapsed);
             }
             finally
@@ -164,6 +181,12 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.PbiCheckList
                 result?.Dispose();
                 oracleDatabase.Close();
             }
+        }
+
+        private string AddFilterToSql(string baseSql, DateTime cutoffDate)
+        {
+            var cutoffDateStr = cutoffDate.ToString("yyyy-MM-dd HH:mm:ss");
+            return baseSql + $" WHERE {UpdatedDateColumn} > to_date('{cutoffDateStr}','YYYY-MM-DD HH24:MI:SS')";
         }
     }
 }
