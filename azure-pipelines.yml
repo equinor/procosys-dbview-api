@@ -94,3 +94,21 @@ stages:
       rgName: '${{ variables.envRgName }}'
       secretName: 'ConnectionStrings-AppConfig'
       webAppName: '${{ variables.webAppname }}'
+
+# run-test-on-test-deployment
+- stage: runtest_test
+  displayName: 'Run tests (Test Env)'
+  dependsOn: 'deploy_test'
+  variables:
+    envName: 'test'
+    envGroup: '$(globalPrefix)-$(fullAppName)-${{ variables.envName }}'  
+  jobs:
+  - template: src/resources/dbview/jobs/runtest.yml@templates
+    parameters:
+      envGroup: '${{ variables.envGroup }}'    
+      artifactName: 'WebApi.Integration.Tests'
+      testAssemblies: '$(Agent.BuildDirectory)\WebApi.Integration.Tests\Equinor.ProCoSys.DbView.WebApi.IntegrationTests.dll'
+      path: '$(Agent.BuildDirectory)'
+      testRunTitle: 'Integration Tests (Test Environment)'
+      testFiltercriteria: 'TestCategory=All'
+      configuration: 'Release'     
