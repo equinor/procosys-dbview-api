@@ -52,7 +52,7 @@ stages:
       nugetConfigPath: 'src/nuget.config'
       overWrite: false
       pathToPublish: '$(Build.ArtifactStagingDirectory)'
-      pathToPublishTest: '$(System.DefaultWorkingDirectory)/Tests/Equinor.ProCoSys.DbView.WebApi.IntegrationTests/bin/Release'
+      pathToPublishTest: '$(System.DefaultWorkingDirectory)/src/Tests/Equinor.ProCoSys.DbView.WebApi.IntegrationTests/bin/Release/netcoreapp3.1'
       platform: '$(buildPlatform)'
       preserveTimestamp: false
       publishLocation: 'Container'
