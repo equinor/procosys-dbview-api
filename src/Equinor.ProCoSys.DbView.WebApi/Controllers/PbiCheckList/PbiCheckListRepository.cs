@@ -128,7 +128,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.PbiCheckList
                 var message = "Counting records in PBI$CHECKLIST";
                 if (cutoffDate.HasValue)
                 {
-                    message += $", using cutoff date={cutoffDate.Value}";
+                    message += $", using cutoff date={cutoffDate.Value:s}";
                     strSql = AddFilterToSql(strSql, cutoffDate.Value);
                 }
                 _logger.LogInformation(message);
@@ -160,7 +160,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.PbiCheckList
                 var message = $"Getting {itemsPerPage} records at page {currentPage} from PBI$CHECKLIST";
                 if (cutoffDate.HasValue)
                 {
-                    message += $", using cutoff date={cutoffDate.Value}";
+                    message += $", using cutoff date={cutoffDate.Value:s}";
                     strSql = AddFilterToSql(strSql, cutoffDate.Value);
                 }
                 strSql += 
