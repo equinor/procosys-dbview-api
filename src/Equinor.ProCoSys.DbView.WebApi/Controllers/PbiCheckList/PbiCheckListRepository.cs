@@ -63,9 +63,9 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.PbiCheckList
             };
         }
 
-        public PbiCheckListModel GetPage(DateTime? cutoffDate, int currentPage, int itemsPerPage, int takeMax = 0)
+        public PbiCheckListModel GetPage(int currentPage, int itemsPerPage, DateTime? cutoffDate, int takeMax = 0)
         {
-            var (checkLists, timeUsed) = GetCheckListInstances(cutoffDate, currentPage, itemsPerPage);
+            var (checkLists, timeUsed) = GetCheckListInstances(currentPage, itemsPerPage, cutoffDate);
             _logger.LogInformation($"Got {checkLists.Count} records from PBI$CHECKLIST, page {currentPage}, pagesize {itemsPerPage} during {FormatTimeSpan(timeUsed)}");
 
             return new PbiCheckListModel
@@ -148,7 +148,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.PbiCheckList
             }
         }
 
-        private (List<CheckListInstance>, TimeSpan) GetCheckListInstances(DateTime? cutoffDate, int currentPage, int itemsPerPage)
+        private (List<CheckListInstance>, TimeSpan) GetCheckListInstances(int currentPage, int itemsPerPage, DateTime? cutoffDate)
         {
             DataTable result = null;
             // After bugfix Oct 02 2021 in PBI$CHECKLIST view, checklist id is unique pr row: ORDER BY CHECKLIST_ID should be sufficient for pagination

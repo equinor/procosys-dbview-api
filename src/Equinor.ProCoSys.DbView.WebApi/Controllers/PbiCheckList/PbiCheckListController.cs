@@ -38,7 +38,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.PbiCheckList
         [HttpGet]
         public PbiCheckListModel GetPage(int currentPage = 0, int itemsPerPage = 100000, DateTime? cutoffDate = null, int max = 0)
         {
-            var model = _repo.GetPage(cutoffDate, currentPage, itemsPerPage, max);
+            var model = _repo.GetPage(currentPage, itemsPerPage, cutoffDate, max);
             return model;
         }
     }
