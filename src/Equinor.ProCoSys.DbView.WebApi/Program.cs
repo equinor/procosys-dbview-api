@@ -53,11 +53,7 @@ namespace Equinor.ProCoSys.DbView.WebApi
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseKestrel(options =>
-                    {
-                        options.AddServerHeader = false;
-                        options.Limits.MaxRequestBodySize = null;
-                    });
+                    webBuilder.UseIISIntegration();
                     webBuilder.UseStartup<Startup>();
                 });
     }
