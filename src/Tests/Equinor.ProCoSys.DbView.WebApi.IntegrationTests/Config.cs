@@ -10,7 +10,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests
         private Config() =>
             _config = new ConfigurationBuilder()
                 .AddJsonFile("testappsettings.json")
-                .AddUserSecrets<Config>()
+                .AddUserSecrets<Config>(true)
                 .Build();
 
         private static Config Instance

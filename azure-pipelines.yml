@@ -1,0 +1,114 @@
+trigger: none
+
+name: $(date:yyyyMMdd)$(rev:.r)
+
+resources:  
+  repositories:
+  - repository: self
+  - repository: templates
+    type: github
+    name: equinor/procosys-infra
+    endpoint: 'equinor'
+    ref: 86651_Create_pipline_for_DbView_Api
+
+
+variables:
+  - template: src/variables/global-variables.yml@templates
+  - template: src/resources/dbview/dbview-variables.yml@templates
+
+  - name: 'buildPlatform'
+    value: 'Any CPU'    
+  - name: 'buildConfiguration'
+    value: 'Release'
+  - name: 'projectName'
+    value: 'dbview'
+
+stages:
+# build_stage
+- stage: build
+  displayName: 'Build'
+  variables:
+    envName: 'build'
+    envGroup: '$(globalPrefix)-$(fullAppName)-${{ variables.envName }}'
+  jobs:
+  - template: src/resources/dbview/jobs/build.yml@templates
+    parameters:
+      dependsOn: ''
+      envGroup: '${{ variables.envGroup }}'
+      deploymentName: 'build'
+      serviceConnection: '${{ variables.nonProdServiceConnection }}'
+      archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+      archiveType: 'zip'
+      artifactName: 'WebApi'
+      artifactNameTest: 'WebApi.Integration.Tests'
+      msbuildArgs: /p:DeployOnBuild=true /p:DeployDefaultTarget=WebPublish /p:WebPublishMethod=FileSystem /p:publishUrl="$(Agent.TempDirectory)\WebAppContent\\" /p:MarkWebConfigAssistFilesAsExclude=false /p:TransformWebConfigEnabled=True /p:AutoParameterizationWebConfigConnectionStrings=false
+      cleanTargetFolder: false
+      command: 'restore'
+      configuration: '$(buildConfiguration)'
+      contents: '**'
+      feedsToUse: 'config'
+      flattenFolders: false
+      includeRootFolder: false
+      nugetConfigPath: 'src/nuget.config'
+      overWrite: false
+      pathToPublish: '$(Build.ArtifactStagingDirectory)'
+      pathToPublishTest: '$(System.DefaultWorkingDirectory)/src/Tests/Equinor.ProCoSys.DbView.WebApi.IntegrationTests/bin/Release/netcoreapp3.1'
+      platform: '$(buildPlatform)'
+      preserveTimestamp: false
+      publishLocation: 'Container'
+      replaceExistingArchive: true
+      rootFolderOrFile: '$(Agent.TempDirectory)/WebAppContent'
+      solution : '**/*.sln'
+      sourceFolder: '$(System.DefaultWorkingDirectory)/$(projectName)/bin/$(buildConfiguration)'
+      targetFolder: '$(Build.BinariesDirectory)/build/App_Data/$(projectName)'
+      versionSpec: '5.11.0'
+      projectName: '$(projectName)'
+
+# deploy_test
+- stage: deploy_test
+  displayName: 'Deploy to Test'
+  dependsOn: 'build'
+  variables:
+    serviceConnection: '${{variables.nonProdServiceConnection}}'
+    envName: 'test'
+    envLabel: 'non-prod'
+    envFull: 'Test'
+    webAppname: '${{ variables.appName }}'
+    envGroup: '$(globalPrefix)-$(fullAppName)-${{ variables.envName }}'
+  jobs:
+  - template: src/resources/dbview/jobs/deploy.yml@templates
+    parameters:
+      dependsOn: ''
+      envFull: '${{ variables.envFull }}'
+      envGroup: '${{ variables.envGroup }}'
+      deploymentName: '${{ variables.envName }}'
+      serviceConnection: '${{ variables.serviceConnection }}'
+      appType: 'webApp'
+      DeploymentType: 'webDeploy'
+      artifactName: 'WebApi'
+      buildType: 'current'
+      downloadPath: '$(System.ArtifactsDirectory)'
+      downloadType: 'single'
+      kvName: '${{ variables.kvName }}'
+      package: '$(System.ArtifactsDirectory)/WebApi/*.zip'
+      rgName: '${{ variables.envRgName }}'
+      secretName: 'ConnectionStrings-AppConfig'
+      webAppName: '${{ variables.webAppname }}'
+
+# run-test-on-test-deployment
+- stage: runtest_test
+  displayName: 'Run tests (Test Env)'
+  dependsOn: 'deploy_test'
+  variables:
+    envName: 'test'
+    envGroup: '$(globalPrefix)-$(fullAppName)-${{ variables.envName }}'  
+  jobs:
+  - template: src/resources/dbview/jobs/runtest.yml@templates
+    parameters:
+      envGroup: '${{ variables.envGroup }}'    
+      artifactName: 'WebApi.Integration.Tests'
+      testAssemblies: '$(Agent.BuildDirectory)\WebApi.Integration.Tests\Equinor.ProCoSys.DbView.WebApi.IntegrationTests.dll'
+      path: '$(Agent.BuildDirectory)'
+      testRunTitle: 'Integration Tests (Test Environment)'
+      testFiltercriteria: 'TestCategory=All|TestCategory=Test'
+      configuration: 'Release'     
