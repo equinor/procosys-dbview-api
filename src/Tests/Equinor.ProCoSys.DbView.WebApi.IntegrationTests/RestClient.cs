@@ -36,6 +36,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests
 
             Console.WriteLine($@"Authenticating against {Config.Authority} as {ClientId}");
             var clientSecret = Config.TestClientSecret(clientConfigKey);
+            Console.WriteLine($@"Using secret {clientSecret.Substring(0,4)}... ");
             var confidentialClientApplication = ConfidentialClientApplicationBuilder
                 .Create(ClientId)
                 .WithClientSecret(clientSecret)
