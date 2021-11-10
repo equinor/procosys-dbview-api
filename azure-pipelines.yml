@@ -98,7 +98,7 @@ stages:
 # run-test-on-test-deployment
 - stage: runtest_test
   displayName: 'Run tests (Test Env)'
-  dependsOn: 'deploy_test'
+#  dependsOn: 'deploy_test'
   variables:
     envName: 'test'
     envGroup: '$(globalPrefix)-$(fullAppName)-${{ variables.envName }}'  
@@ -110,5 +110,5 @@ stages:
       testAssemblies: '$(Agent.BuildDirectory)\WebApi.Integration.Tests\Equinor.ProCoSys.DbView.WebApi.IntegrationTests.dll'
       path: '$(Agent.BuildDirectory)'
       testRunTitle: 'Integration Tests (Test Environment)'
-      testFiltercriteria: 'TestCategory=All'
+      testFiltercriteria: 'TestCategory=All|TestCategory=Test'
       configuration: 'Release'     
