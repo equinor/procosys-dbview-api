@@ -1,9 +1,9 @@
 {
   "Authority": "https://login.microsoftonline.com/3aa4a235-b6e2-48d5-9195-7fcf05b459b0",
-  "ApplicationUrl": "https://localhost:47501",
+  "ApplicationUrl": "https://pcs-dbview-test.azurewebsites.net",
   "WebApiScope": "api://288c0a15-a807-45ee-8384-10bc33bc3779/.default",
   "TestClient1:ClientId": "f60fc51b-f0c7-40cc-9575-9d2e91d1c01f",
-  "TestClient1:ClientSecret": "setup-in-user-secret",
+  "TestClient1:ClientSecret": "#{TestClient1Secret}#",
   "TestClient2:ClientId": "12d57bf8-68b9-4812-b825-ea06dfdec77a",
-  "TestClient2:ClientSecret": "setup-in-user-secret"
+  "TestClient2:ClientSecret": "#{TestClient2Secret}#"
 }
