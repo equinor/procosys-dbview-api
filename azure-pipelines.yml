@@ -98,7 +98,7 @@ stages:
 # run-test-on-test-deployment
 - stage: runtest_test
   displayName: 'Run tests (Test Env)'
-  dependsOn: 'deploy_test'
+#  dependsOn: 'deploy_test'
   variables:
     envName: 'test'
     envGroup: '$(globalPrefix)-$(fullAppName)-${{ variables.envName }}'  
