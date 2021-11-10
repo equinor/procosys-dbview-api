@@ -30,7 +30,8 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
             (model, timeUsed) = await GetMaxAvailableUsingClientWithAccess();
 
             ShowModel("GetMaxAvailable", model, timeUsed);
-            Assert.IsTrue(model.MaxAvailable >= 2000000);
+            // total number of chgecklist pr Nov 2021 was 2665754
+            Assert.IsTrue(model.MaxAvailable >= 2600000);
         }
 
         [TestCategory("Local")]
@@ -55,7 +56,6 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
                 // max available should be constant
                 var result = results[idx];
                 Assert.AreEqual(results[idx-0], result);
-                Assert.IsTrue(result >= 2000000);
             }
         }
 
