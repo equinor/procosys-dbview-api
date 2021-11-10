@@ -1,8 +1,10 @@
-﻿namespace Equinor.ProCoSys.DbView.WebApi.Controllers.PbiCheckList
+﻿using System;
+
+namespace Equinor.ProCoSys.DbView.WebApi.Controllers.PbiCheckList
 {
     public interface IPbiCheckListRepository
     {
-        PbiCheckListMaxAvailableModel GetMaxAvailable();
-        PbiCheckListModel GetPage(int currentPage, int itemsPerPage, int takeMax = 0);
+        PbiCheckListMaxAvailableModel GetMaxAvailable(DateTime? cutoffDate);
+        PbiCheckListModel GetPage(int currentPage, int itemsPerPage, DateTime? cutoffDate, int takeMax = 0);
     }
 }

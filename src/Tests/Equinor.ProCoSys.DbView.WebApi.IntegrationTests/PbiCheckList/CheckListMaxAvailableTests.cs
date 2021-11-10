@@ -14,28 +14,29 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
         [TestCategory("All")]
         [TestMethod]
         public async Task A1_ShouldReturnUnauthorizedIfNotAuthenticated()
-            => await CheckListTestsHelper.GetMaxAvailable(NotAuthenticatedRestClient, HttpStatusCode.Unauthorized);
+            => await CheckListTestsHelper.GetMaxAvailable(NotAuthenticatedRestClient, null, HttpStatusCode.Unauthorized);
 
         [TestCategory("All")]
         [TestMethod]
         public async Task A2_ShouldReturnForbiddenIfNoAccess()
-            => await CheckListTestsHelper.GetMaxAvailable(ClientWithoutAccess, HttpStatusCode.Forbidden);
+            => await CheckListTestsHelper.GetMaxAvailable(ClientWithoutAccess, null, HttpStatusCode.Forbidden);
 
         [TestCategory("Test")]
         [TestMethod]
-        public async Task B_ShouldGetMaxAvailableIfHasAccess()
+        public async Task B_ShouldGetMaxAvailable()
         {
             PbiCheckListMaxAvailableModel model;
             TimeSpan timeUsed;
             (model, timeUsed) = await GetMaxAvailableUsingClientWithAccess();
 
             ShowModel("GetMaxAvailable", model, timeUsed);
-            Assert.IsTrue(model.MaxAvailable >= 2800000);
+            // total number of chgecklist pr Nov 2021 was 2665754
+            Assert.IsTrue(model.MaxAvailable >= 2600000);
         }
 
         [TestCategory("Local")]
         [TestMethod]
-        public async Task C_ShouldGetSameMaxAvailableIfHasAccess()
+        public async Task C_ShouldGetSameMaxAvailable()
         {
             var results = new List<long>();
 
@@ -49,20 +50,47 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
                 results.Add(model.MaxAvailable);
             }
 
+            // test can be unstable due to possible added checklists during test runtime
             for (var idx = 1; idx < results.Count; idx++)
             {
                 // max available should be constant
                 var result = results[idx];
                 Assert.AreEqual(results[idx-0], result);
-                Assert.IsTrue(result >= 2800000);
             }
         }
 
-        private async Task<(PbiCheckListMaxAvailableModel, TimeSpan)> GetMaxAvailableUsingClientWithAccess()
+        [TestCategory("Test")]
+        [TestMethod]
+        public async Task D_ShouldGetMaxAvailableWithCutoffDate()
+        {
+            PbiCheckListMaxAvailableModel model;
+            TimeSpan timeUsed;
+            const int daysOffset = 60;
+            (model, timeUsed) = await GetMaxAvailableUsingClientWithAccess(CheckListTestsHelper.CreateDateOffsetToday(daysOffset*-1));
+
+            ShowModel("GetMaxAvailable", model, timeUsed);
+            var maxExpectedChangesPastDays = 100000;
+            Assert.IsTrue(model.MaxAvailable < maxExpectedChangesPastDays, 
+                $"Number of changed checklists is more than {maxExpectedChangesPastDays} past {daysOffset} days. Can be natural. Consider modify the test");
+        }
+
+        [TestCategory("Test")]
+        [TestMethod]
+        public async Task E_ShouldGetZeroWithFutureCutoffDate()
+        {
+            PbiCheckListMaxAvailableModel model;
+            TimeSpan timeUsed;
+            (model, timeUsed) = await GetMaxAvailableUsingClientWithAccess(CheckListTestsHelper.CreateDateOffsetToday(1));
+
+            ShowModel("GetMaxAvailable", model, timeUsed);
+            Assert.AreEqual(0, model.MaxAvailable);
+        }
+
+        private async Task<(PbiCheckListMaxAvailableModel, TimeSpan)> GetMaxAvailableUsingClientWithAccess(string cutoffDate = null)
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();
-            var checkListModel = await CheckListTestsHelper.GetMaxAvailable(ClientWithAccess);
+            var checkListModel = await CheckListTestsHelper.GetMaxAvailable(ClientWithAccess, cutoffDate);
             stopWatch.Stop();
             return (checkListModel, stopWatch.Elapsed);
         }
