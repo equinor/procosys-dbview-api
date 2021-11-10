@@ -35,7 +35,7 @@ namespace Equinor.ProCoSys.DbView.WebApi
                                     kv.SetCredential(new DefaultAzureCredential());
                                 })
                                 .Select(KeyFilter.Any)
-                                .Select(KeyFilter.Any, context.HostingEnvironment.EnvironmentName)
+                                .Select(KeyFilter.Any, settings["Azure:AppConfigLabelFilter"])
                                 .ConfigureRefresh(refreshOptions =>
                                 {
                                     refreshOptions.Register("Sentinel", true);
