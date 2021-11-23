@@ -69,9 +69,9 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
             (model, timeUsed) = await GetMaxAvailableUsingClientWithAccess(CheckListTestsHelper.CreateDateOffsetToday(daysOffset*-1));
 
             ShowModel("GetMaxAvailable", model, timeUsed);
-            var maxExpectedChangesPastDays = 100000;
+            var maxExpectedChangesPastDays = 200000;
             Assert.IsTrue(model.MaxAvailable < maxExpectedChangesPastDays, 
-                $"Number of changed checklists is more than {maxExpectedChangesPastDays} past {daysOffset} days. Can be natural. Consider modify the test");
+                $"Number of changed checklists {model.MaxAvailable} is more than {maxExpectedChangesPastDays} past {daysOffset} days. Can be natural. Consider modify the test");
         }
 
         [TestCategory("Test")]
