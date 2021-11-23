@@ -113,11 +113,10 @@ stages:
       testFiltercriteria: 'TestCategory=All|TestCategory=Test'
       configuration: 'Release'
 
-
 # deploy_production
 - stage: deploy_production
   displayName: 'Deploy to Production'
-  dependsOn: 'build'
+  dependsOn: 'runtest_test'
   variables:
     serviceConnection: '${{variables.prodServiceConnection}}'
     envName: 'prod'
