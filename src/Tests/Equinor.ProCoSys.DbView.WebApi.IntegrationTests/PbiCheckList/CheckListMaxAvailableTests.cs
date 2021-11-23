@@ -30,7 +30,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
             (model, timeUsed) = await GetMaxAvailableUsingClientWithAccess();
 
             ShowModel("GetMaxAvailable", model, timeUsed);
-            // total number of chgecklist pr Nov 2021 was 2665754
+            // total number of checklist pr Nov 2021 was 2665754
             Assert.IsTrue(model.MaxAvailable >= 2600000);
         }
 
