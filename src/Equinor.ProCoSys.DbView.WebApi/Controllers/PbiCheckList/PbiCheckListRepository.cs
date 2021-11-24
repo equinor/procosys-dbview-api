@@ -117,7 +117,6 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.PbiCheckList
             return checkListInstances;
         }
 
-
         private (long, TimeSpan) CountMaxAvailable(DateTime? cutoffDate)
         {
             DataTable result = null;
