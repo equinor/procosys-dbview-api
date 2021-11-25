@@ -1,20 +1,15 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-
     <IsPackable>false</IsPackable>
-
     <UserSecretsId>598d3b6c-76ec-42c2-855f-6497d80b1dc7</UserSecretsId>
-
-    <Configurations>Debug;Release;Test</Configurations>
+    <Configurations>Debug;Release;Test;Production</Configurations>
   </PropertyGroup>
-
   <ItemGroup>
     <None Remove="testappsettings.json" />
     <DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="1.0.1" />
   </ItemGroup>
-
   <ItemGroup>
     <Content Include="testappsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -22,7 +17,6 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.0" />
@@ -35,5 +29,4 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-
 </Project>
