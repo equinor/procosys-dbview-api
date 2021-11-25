@@ -19,7 +19,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
         [TestCategory("All")]
         [TestMethod]
         public async Task A2_ShouldReturnForbiddenIfNoAccess()
-            => await CheckListTestsHelper.GetMaxAvailable(ClientWithoutAccess, null, HttpStatusCode.Forbidden);
+            => await CheckListTestsHelper.GetMaxAvailable(ClientWithoutAnyRoles, null, HttpStatusCode.Forbidden);
 
         [TestCategory("Test")]
         [TestMethod]

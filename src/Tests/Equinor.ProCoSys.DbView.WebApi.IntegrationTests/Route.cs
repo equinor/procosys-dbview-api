@@ -2,6 +2,11 @@
 {
     public class Route
     {
+        public class Heartbeat
+        {
+            public static string Get => "/api/DbView/Heartbeat/IsAlive";
+        }
+
         public class DbView
         {
             public class PbiCheckList

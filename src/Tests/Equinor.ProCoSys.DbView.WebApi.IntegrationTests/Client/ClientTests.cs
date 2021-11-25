@@ -25,8 +25,8 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.Client
         [TestMethod]
         public void ShouldCreateAuthenticatedClientWithoutAccess()
         {
-            Assert.IsTrue(ClientWithoutAccess.IsAuthenticated);
-            Assert.IsNotNull(ClientWithoutAccess.ClientId);
+            Assert.IsTrue(ClientWithoutAnyRoles.IsAuthenticated);
+            Assert.IsNotNull(ClientWithoutAnyRoles.ClientId);
         }
     }
 }
