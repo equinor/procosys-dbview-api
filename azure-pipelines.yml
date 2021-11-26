@@ -113,7 +113,7 @@ stages:
       testRunTitle: 'Integration Tests (Test env.)'
       testFiltercriteria: 'TestCategory=All|TestCategory=Test'
       configuration: 'Release'
-      runSettingsFile: 'TestEnvironment.runsettings'
+      runSettingsFile: '$(Agent.BuildDirectory)\WebApi.Integration.Tests\TestEnvironment.runsettings'
 
 # deploy_production
 - stage: deploy_production
@@ -164,4 +164,4 @@ stages:
       testRunTitle: 'Integration Tests (Production env.)'
       testFiltercriteria: 'TestCategory=All|TestCategory=Prod'
       configuration: 'Release'     
-      runSettingsFile: 'ProdEnvironment.runsettings'
+      runSettingsFile: '$(Agent.BuildDirectory)\WebApi.Integration.Tests\ProdEnvironment.runsettings'
