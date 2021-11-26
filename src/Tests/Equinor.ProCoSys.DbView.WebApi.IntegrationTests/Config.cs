@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Configuration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests
 {
@@ -12,8 +13,8 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests
         {
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             _config = new ConfigurationBuilder()
-                .AddJsonFile("testappsettings.json")
-                .AddJsonFile($"testappsettings.{environment}.json", true)
+                .AddJsonFile("appsettings.json")
+                .AddJsonFile($"appsettings.{environment}.json", true)
                 .AddUserSecrets<Config>(true)
                 .Build();
         }

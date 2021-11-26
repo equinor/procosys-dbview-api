@@ -12,8 +12,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution items", "Solution items", "{9E8E2964-3334-42BC-9F31-1DD4A9EE0F8E}"
 	ProjectSection(SolutionItems) = preProject
 		..\azure-pipelines.yml = ..\azure-pipelines.yml
+		LocalEnvironment.runsettings = LocalEnvironment.runsettings
 		nuget.config = nuget.config
+		ProdEnvironment.runsettings = ProdEnvironment.runsettings
 		..\README.md = ..\README.md
+		TestEnvironment.runsettings = TestEnvironment.runsettings
 	EndProjectSection
 EndProject
 Global

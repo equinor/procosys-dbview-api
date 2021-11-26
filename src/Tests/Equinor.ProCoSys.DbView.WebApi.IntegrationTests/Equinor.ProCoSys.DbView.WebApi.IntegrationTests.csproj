@@ -7,11 +7,11 @@
     <Configurations>Debug;Release;Test;Production</Configurations>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="testappsettings.json" />
+    <None Remove="appsettings.json" />
     <DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="1.0.1" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="testappsettings.json">
+    <Content Include="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
@@ -28,5 +28,13 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="appsettings.Production.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="appsettings.Test.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>
