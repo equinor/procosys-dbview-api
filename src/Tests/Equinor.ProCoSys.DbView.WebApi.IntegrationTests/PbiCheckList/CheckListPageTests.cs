@@ -19,7 +19,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
         [TestCategory("All")]
         [TestMethod]
         public async Task A2_ShouldReturnForbiddenIfNoAccess()
-            => await CheckListTestsHelper.GetCheckListPage(ClientWithoutAccess, null, 0, 10, HttpStatusCode.Forbidden);
+            => await CheckListTestsHelper.GetCheckListPage(ClientWithoutAnyRoles, null, 0, 10, HttpStatusCode.Forbidden);
 
         [TestCategory("Local")]
         [TestMethod]
@@ -141,7 +141,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
         public async Task G1_ShouldGetCheckListPageWithCutoffDate()
         {
             const int daysOffset = 60;
-            const int itemsPerPage = 100000;
+            const int itemsPerPage = 200000;
             TimeSpan timeUsed;
             PbiCheckListModel page0;
 
@@ -149,7 +149,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
             ShowModel("Page 0", page0, timeUsed);
             AssertModel(page0, itemsPerPage, false);
             Assert.IsTrue(page0.CheckLists.Count() < itemsPerPage,
-                $"Number of changed checklists is more than {itemsPerPage} past {daysOffset} days. Can be natural. Consider modify the test");
+                $"Number of changed checklists {page0.CheckLists.Count()} is more than {itemsPerPage} past {daysOffset} days. Can be natural. Consider modify the test");
         }
 
         [TestCategory("Test")]

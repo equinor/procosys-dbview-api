@@ -34,7 +34,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests
         {
             ClientId = Config.TestClientId(clientConfigKey);
 
-            Console.WriteLine($@"Authenticating against {Config.Authority} as {ClientId}");
+            Console.WriteLine($@"Authenticating against {Config.Authority} as client {ClientId}");
             var clientSecret = Config.TestClientSecret(clientConfigKey);
             Console.WriteLine($@"Using secret {clientSecret.Substring(0,4)}... ");
             var confidentialClientApplication = ConfidentialClientApplicationBuilder
@@ -43,6 +43,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests
                 .WithAuthority(new Uri(Config.Authority))
                 .Build();
 
+            Console.WriteLine($@"Scope requested for client: {Config.WebApiScope}");
             var scopes = new[] { Config.WebApiScope };
 
             var result = await confidentialClientApplication

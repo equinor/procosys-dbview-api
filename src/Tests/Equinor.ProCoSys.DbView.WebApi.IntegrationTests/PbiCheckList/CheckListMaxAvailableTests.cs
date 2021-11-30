@@ -19,7 +19,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
         [TestCategory("All")]
         [TestMethod]
         public async Task A2_ShouldReturnForbiddenIfNoAccess()
-            => await CheckListTestsHelper.GetMaxAvailable(ClientWithoutAccess, null, HttpStatusCode.Forbidden);
+            => await CheckListTestsHelper.GetMaxAvailable(ClientWithoutAnyRoles, null, HttpStatusCode.Forbidden);
 
         [TestCategory("Test")]
         [TestMethod]
@@ -30,7 +30,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
             (model, timeUsed) = await GetMaxAvailableUsingClientWithAccess();
 
             ShowModel("GetMaxAvailable", model, timeUsed);
-            // total number of chgecklist pr Nov 2021 was 2665754
+            // total number of checklist pr Nov 2021 was 2665754
             Assert.IsTrue(model.MaxAvailable >= 2600000);
         }
 
@@ -69,9 +69,9 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
             (model, timeUsed) = await GetMaxAvailableUsingClientWithAccess(CheckListTestsHelper.CreateDateOffsetToday(daysOffset*-1));
 
             ShowModel("GetMaxAvailable", model, timeUsed);
-            var maxExpectedChangesPastDays = 100000;
+            var maxExpectedChangesPastDays = 200000;
             Assert.IsTrue(model.MaxAvailable < maxExpectedChangesPastDays, 
-                $"Number of changed checklists is more than {maxExpectedChangesPastDays} past {daysOffset} days. Can be natural. Consider modify the test");
+                $"Number of changed checklists {model.MaxAvailable} is more than {maxExpectedChangesPastDays} past {daysOffset} days. Can be natural. Consider modify the test");
         }
 
         [TestCategory("Test")]

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using System.IO;
 using Azure.Identity;
 using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Hosting;
@@ -20,7 +18,7 @@ namespace Equinor.ProCoSys.DbView.WebApi
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((context, config) =>
+                .ConfigureAppConfiguration((_, config) =>
                 {
                     var settings = config.Build();
                     var azConfig = settings.GetValue<bool>("UseAzureAppConfiguration");

@@ -1,4 +1,7 @@
-trigger: none
+trigger:
+  branches:
+    include:
+      - master
 
 name: $(date:yyyyMMdd)$(rev:.r)
 
@@ -9,7 +12,6 @@ resources:
     type: github
     name: equinor/procosys-infra
     endpoint: 'equinor'
-    ref: 86651_Create_pipline_for_DbView_Api
 
 
 variables:
@@ -97,11 +99,12 @@ stages:
 
 # run-test-on-test-deployment
 - stage: runtest_test
-  displayName: 'Run tests (Test Env)'
+  displayName: 'Run tests (Test env.)'
   dependsOn: 'deploy_test'
   variables:
     envName: 'test'
     envGroup: '$(globalPrefix)-$(fullAppName)-${{ variables.envName }}'  
+    ASPNETCORE_ENVIRONMENT: 'Test'
   jobs:
   - template: src/resources/dbview/jobs/runtest.yml@templates
     parameters:
@@ -109,6 +112,58 @@ stages:
       artifactName: 'WebApi.Integration.Tests'
       testAssemblies: '$(Agent.BuildDirectory)\WebApi.Integration.Tests\Equinor.ProCoSys.DbView.WebApi.IntegrationTests.dll'
       path: '$(Agent.BuildDirectory)'
-      testRunTitle: 'Integration Tests (Test Environment)'
+      testRunTitle: 'Integration Tests (Test env.)'
       testFiltercriteria: 'TestCategory=All|TestCategory=Test'
+      configuration: 'Release'
+      runSettingsFile: '$(Agent.BuildDirectory)\WebApi.Integration.Tests\runsettings\TestEnvironment.runsettings'
+
+# deploy_production
+- stage: deploy_production
+  displayName: 'Deploy to Production'
+  dependsOn: 'runtest_test'
+  variables:
+    serviceConnection: '${{variables.prodServiceConnection}}'
+    envName: 'prod'
+    envLabel: 'prod'
+    envFull: 'Production'
+    webAppname: '${{ variables.appName }}'
+    envGroup: '$(globalPrefix)-$(fullAppName)-${{ variables.envName }}'
+  jobs:
+  - template: src/resources/dbview/jobs/deploy.yml@templates
+    parameters:
+      dependsOn: ''
+      envFull: '${{ variables.envFull }}'
+      envGroup: '${{ variables.envGroup }}'
+      deploymentName: '${{ variables.envName }}'
+      serviceConnection: '${{ variables.serviceConnection }}'
+      appType: 'webApp'
+      DeploymentType: 'webDeploy'
+      artifactName: 'WebApi'
+      buildType: 'current'
+      downloadPath: '$(System.ArtifactsDirectory)'
+      downloadType: 'single'
+      kvName: '${{ variables.kvName }}'
+      package: '$(System.ArtifactsDirectory)/WebApi/*.zip'
+      rgName: '${{ variables.envRgName }}'
+      secretName: 'ConnectionStrings-AppConfig'
+      webAppName: '${{ variables.webAppname }}'
+
+# run-test-on-prod-deployment
+- stage: runtest_production
+  displayName: 'Run tests (Production env.)'
+  dependsOn: 'deploy_production'
+  variables:
+    envName: 'prod'
+    envGroup: '$(globalPrefix)-$(fullAppName)-${{ variables.envName }}'  
+    ASPNETCORE_ENVIRONMENT: 'Production'
+  jobs:
+  - template: src/resources/dbview/jobs/runtest.yml@templates
+    parameters:
+      envGroup: '${{ variables.envGroup }}'    
+      artifactName: 'WebApi.Integration.Tests'
+      testAssemblies: '$(Agent.BuildDirectory)\WebApi.Integration.Tests\Equinor.ProCoSys.DbView.WebApi.IntegrationTests.dll'
+      path: '$(Agent.BuildDirectory)'
+      testRunTitle: 'Integration Tests (Production env.)'
+      testFiltercriteria: 'TestCategory=All|TestCategory=Prod'
       configuration: 'Release'     
+      runSettingsFile: '$(Agent.BuildDirectory)\WebApi.Integration.Tests\runsettings\ProdEnvironment.runsettings'
