@@ -1,4 +1,7 @@
-trigger: none
+trigger:
+  branches:
+    include:
+      - master
 
 name: $(date:yyyyMMdd)$(rev:.r)
 
@@ -9,7 +12,6 @@ resources:
     type: github
     name: equinor/procosys-infra
     endpoint: 'equinor'
-    ref: 86651_Create_pipline_for_DbView_Api
 
 
 variables:
