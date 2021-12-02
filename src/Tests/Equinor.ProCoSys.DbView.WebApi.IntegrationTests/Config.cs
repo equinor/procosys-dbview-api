@@ -11,6 +11,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests
         private Config()
         {
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            Console.WriteLine($"Running tests in {environment} environment");
             _config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
                 .AddJsonFile($"appsettings.{environment}.json", true)
