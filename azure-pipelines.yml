@@ -164,6 +164,6 @@ stages:
       testAssemblies: '$(Agent.BuildDirectory)\WebApi.Integration.Tests\Equinor.ProCoSys.DbView.WebApi.IntegrationTests.dll'
       path: '$(Agent.BuildDirectory)'
       testRunTitle: 'Integration Tests (Production env.)'
-      testFiltercriteria: 'TestCategory=All|TestCategory=Prod'
+      testFiltercriteria: 'TestCategory=All|TestCategory=Production'
       configuration: 'Release'     
       runSettingsFile: '$(Agent.BuildDirectory)\WebApi.Integration.Tests\runsettings\ProdEnvironment.runsettings'
