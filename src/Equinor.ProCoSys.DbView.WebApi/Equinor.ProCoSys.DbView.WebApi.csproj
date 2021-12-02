@@ -8,6 +8,9 @@
     <ApplicationInsightsAnnotationResourceId>/subscriptions/343069e3-ceaa-4256-bdc8-49fa3646c1c4/resourcegroups/pcs-dbview-dev-rg/providers/microsoft.insights/components/pcs-pres-dev-ai</ApplicationInsightsAnnotationResourceId>
     <Configurations>Debug;Release;Test;Production</Configurations>
   </PropertyGroup>
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Azure.Identity" Version="1.5.0" />
     <PackageReference Include="Azure.Storage.Blobs" Version="12.10.0" />
