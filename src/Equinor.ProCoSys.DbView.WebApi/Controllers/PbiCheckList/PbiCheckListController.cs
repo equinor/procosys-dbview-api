@@ -1,10 +1,9 @@
 ﻿using System;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Equinor.ProCoSys.DbView.WebApi.Controllers.PbiCheckList
 {
-    [Authorize(Roles = "DbView.CheckList.Read.All")]
+    [AuthorizeAnyRole("DbView.CheckList.Read.All", "DBView.PBI.Read.All")]
     [ApiController]
     [Route("api/DbView/PbiCheckList")]
     public class PbiCheckListController : ControllerBase
