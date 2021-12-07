@@ -122,6 +122,7 @@ namespace Equinor.ProCoSys.DbView.WebApi
                     }
                 });
 
+                c.EnableAnnotations();
                 c.OperationFilter<AddRoleDocumentation>();
             });
 
