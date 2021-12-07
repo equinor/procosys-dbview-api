@@ -2,7 +2,7 @@
 {
     public interface ITagRepository
     {
-        TagMaxAvailableModel GetMaxAvailable(string plantName);
-        TagModel GetPage(string plantName, int currentPage, int itemsPerPage, int takeMax = 0);
+        TagMaxAvailableModel GetMaxAvailable(string installationCode);
+        TagModel GetPage(string installationCode, int currentPage, int itemsPerPage, int takeMax = 0);
     }
 }

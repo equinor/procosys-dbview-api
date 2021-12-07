@@ -28,7 +28,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
         private static readonly string s_responsible = "Responsible";
         private static readonly string s_status = "Status";
 
-        private static readonly string s_plantNameToken = "[PLANTNAME]";
+        private static readonly string s_instCodeToken = "[INSTCODE]";
         
         private static readonly string s_tagQuery =
             $@"SELECT 
@@ -86,7 +86,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
                     ON (    CT.PLANT = MCP.PLANT
                         AND CT.PROJECT = MCP.PROJECT
                         AND MCPT.MCPKGNO = MCP.MCPKGNO)
-           WHERE CT.PLANT = '{s_plantNameToken}'
+           WHERE CT.PLANT = '{s_instCodeToken}'
         GROUP BY CT.TAGNO,
                  CT.PROJECT,
                  CT.COMMPKGNO,
@@ -130,9 +130,9 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
             _connectionString = configuration.GetConnectionString("ProCoSys");
         }
 
-        public TagMaxAvailableModel GetMaxAvailable(string plantName)
+        public TagMaxAvailableModel GetMaxAvailable(string installationCode)
         {
-            var (maxAvailable, timeUsed) = CountMaxAvailable(plantName);
+            var (maxAvailable, timeUsed) = CountMaxAvailable(installationCode);
 
             _logger.LogInformation($"Found {maxAvailable} records for 3D Ecosystems during {FormatTimeSpan(timeUsed)}");
             return new TagMaxAvailableModel
@@ -142,9 +142,9 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
             };
         }
 
-        public TagModel GetPage(string plantName, int currentPage, int itemsPerPage, int takeMax = 0)
+        public TagModel GetPage(string installationCode, int currentPage, int itemsPerPage, int takeMax = 0)
         {
-            var (tags, timeUsed) = GetTagPropertiesInstances(plantName, currentPage, itemsPerPage);
+            var (tags, timeUsed) = GetTagPropertiesInstances(installationCode, currentPage, itemsPerPage);
             _logger.LogInformation($"Got {tags.Count} records for 3D Ecosystems, page {currentPage}, pagesize {itemsPerPage} during {FormatTimeSpan(timeUsed)}");
 
             return new TagModel
@@ -197,14 +197,14 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
             return instances;
         }
 
-        private (long, TimeSpan) CountMaxAvailable(string plantName)
+        private (long, TimeSpan) CountMaxAvailable(string installationCode)
         {
             DataTable result = null;
             var oracleDatabase = new OracleDb(_connectionString);
             try
             {
-                var strSql = $@"SELECT COUNT(*) AS COUNT_ALL FROM ({s_tagQuery.Replace(s_plantNameToken, plantName)})";
-                _logger.LogInformation($"Counting records for 3D Ecosystems for plant {plantName}");
+                var strSql = $@"SELECT COUNT(*) AS COUNT_ALL FROM ({s_tagQuery.Replace(s_instCodeToken, installationCode)})";
+                _logger.LogInformation($"Counting records for 3D Ecosystems for installation code {installationCode}");
                 
                 var stopWatch = new Stopwatch();
                 stopWatch.Start();
@@ -221,15 +221,15 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
             }
         }
 
-        private (List<TagPropertiesInstance>, TimeSpan) GetTagPropertiesInstances(string plantName, int currentPage, int itemsPerPage)
+        private (List<TagPropertiesInstance>, TimeSpan) GetTagPropertiesInstances(string installationCode, int currentPage, int itemsPerPage)
         {
             DataTable result = null;
 
             var oracleDatabase = new OracleDb(_connectionString);
             try
             {
-                var strSql = s_tagQuery.Replace(s_plantNameToken, plantName);
-                var message = $"Getting {itemsPerPage} records at page {currentPage} for 3D Ecosystems for plant {plantName}";
+                var strSql = s_tagQuery.Replace(s_instCodeToken, installationCode);
+                var message = $"Getting {itemsPerPage} records at page {currentPage} for 3D Ecosystems for installation code {installationCode}";
                 strSql += 
                     $@" ORDER BY CT.TAGNO,
                      CT.PROJECT,
