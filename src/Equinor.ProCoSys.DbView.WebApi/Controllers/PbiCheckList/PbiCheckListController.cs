@@ -13,7 +13,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.PbiCheckList
         public PbiCheckListController(IPbiCheckListRepository repo) => _repo = repo;
 
         /// <summary>
-        /// POC! Count available CheckList records in PBI$CHECKLIST view (Test and Prod environment only) POC!
+        /// POC! Count all CheckList records available in PBI$CHECKLIST view POC!
         /// </summary>
         /// <param name="cutoffDate">Get records changed after given cutoffDate. Default = null will return all</param>
         /// <remarks>This is a POC. Can be changed or removed at any time</remarks>
@@ -26,7 +26,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.PbiCheckList
         }
 
         /// <summary>
-        /// POC! Get all CheckList records in PBI$CHECKLIST view (Test and Prod environment only) POC!
+        /// POC! Get page of available CheckList records in PBI$CHECKLIST view POC!
         /// </summary>
         /// <param name="currentPage">Current page to get. Default is 0 (first page)</param>
         /// <param name="itemsPerPage">Number of items pr page. Default is 100000</param>
