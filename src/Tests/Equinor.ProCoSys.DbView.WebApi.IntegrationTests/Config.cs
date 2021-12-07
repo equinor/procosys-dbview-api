@@ -14,7 +14,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests
             Console.WriteLine($"Running tests in {environment} environment");
             _config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
-                .AddJsonFile($"appsettings.{environment}.json", true)
+                .AddJsonFile($"appsettings.{environment}.json")
                 .AddUserSecrets<Config>(true)
                 .Build();
         }

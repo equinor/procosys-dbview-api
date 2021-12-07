@@ -1,5 +1,5 @@
 ﻿using Equinor.ProCoSys.DbView.WebApi.Controllers.PbiCheckList;
-using Equinor.ProCoSys.DbView.WebApi.Misc;
+using Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Equinor.ProCoSys.DbView.WebApi.Telemetry;
@@ -22,6 +22,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.DIModules
             // Scoped - Created once per client request (connection)
             services.AddScoped<ITelemetryClient, ApplicationInsightsTelemetryClient>();
             services.AddScoped<IPbiCheckListRepository, PbiCheckListRepository>();
+            services.AddScoped<ITagRepository, TagRepository>();
 
             // Singleton - Created the first time they are requested
         }
