@@ -70,6 +70,7 @@ stages:
 - stage: deploy_test
   displayName: 'Deploy to Test'
   dependsOn: 'build'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   variables:
     serviceConnection: '${{variables.nonProdServiceConnection}}'
     envName: 'test'
@@ -101,6 +102,7 @@ stages:
 - stage: runtest_test
   displayName: 'Run tests (Test env.)'
   dependsOn: 'deploy_test'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   variables:
     envName: 'test'
     envGroup: '$(globalPrefix)-$(fullAppName)-${{ variables.envName }}'  
@@ -121,6 +123,7 @@ stages:
 - stage: deploy_production
   displayName: 'Deploy to Production'
   dependsOn: 'runtest_test'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   variables:
     serviceConnection: '${{variables.prodServiceConnection}}'
     envName: 'prod'
@@ -152,6 +155,7 @@ stages:
 - stage: runtest_production
   displayName: 'Run tests (Production env.)'
   dependsOn: 'deploy_production'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   variables:
     envName: 'prod'
     envGroup: '$(globalPrefix)-$(fullAppName)-${{ variables.envName }}'  
