@@ -13,20 +13,6 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
         public ThreeDEcoTagController(ITagRepository repo) => _repo = repo;
 
         /// <summary>
-        /// POC! Count all Tags available for 3D Ecosystems POC!
-        /// </summary>
-        /// <param name="installationCode">Installation code, representing the plant (I.e JSV, GRA, TROA etc...)</param>
-        /// <remarks>This is a POC. Can be changed or removed at any time</remarks>
-        /// <response code="200">OK</response>
-        [SwaggerOperation(Tags = new[] { "3DEcosystem" })]
-        [HttpGet("Count")]
-        public TagMaxAvailableModel Count(string installationCode)
-        {
-            var model = _repo.GetMaxAvailable(installationCode);
-            return model;
-        }
-
-        /// <summary>
         /// POC! Get page of Tags available for 3D Ecosystems POC!
         /// </summary>
         /// <param name="installationCode">Installation code, representing the plant (I.e JSV, GRA, TROA etc...)</param>

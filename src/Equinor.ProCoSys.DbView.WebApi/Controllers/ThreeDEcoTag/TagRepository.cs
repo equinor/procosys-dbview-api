@@ -130,29 +130,17 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
             _connectionString = configuration.GetConnectionString("ProCoSys");
         }
 
-        public TagMaxAvailableModel GetMaxAvailable(string installationCode)
-        {
-            var (maxAvailable, timeUsed) = CountMaxAvailable(installationCode);
-
-            _logger.LogInformation($"Found {maxAvailable} records for 3D Ecosystems during {FormatTimeSpan(timeUsed)}");
-            return new TagMaxAvailableModel
-            {
-                TimeUsed = FormatTimeSpan(timeUsed),
-                MaxAvailable = maxAvailable
-            };
-        }
-
         public TagModel GetPage(string installationCode, int currentPage, int itemsPerPage, int takeMax = 0)
         {
             var (tags, timeUsed) = GetTagPropertiesInstances(installationCode, currentPage, itemsPerPage);
-            _logger.LogInformation($"Got {tags.Count} records for 3D Ecosystems, page {currentPage}, pagesize {itemsPerPage} during {FormatTimeSpan(timeUsed)}");
+            _logger.LogInformation($"Got {tags.Count()} records for 3D Ecosystems, page {currentPage}, pagesize {itemsPerPage} during {FormatTimeSpan(timeUsed)}");
 
             return new TagModel
             {
                 TimeUsed = FormatTimeSpan(timeUsed),
                 Heading = GetTagPropertiesHeading(),
                 Tags = takeMax > 0 ? tags.Take(takeMax) : tags,
-                Count = tags.Count
+                Count = tags.Count()
             };
         }
 
@@ -176,10 +164,11 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
                 s_status
             };
 
-        private static List<TagPropertiesInstance> GeTagPropertiesInstances(DataTable dataTable)
+        private static IEnumerable<IEnumerable<object>> GeTagPropertiesInstances(DataTable dataTable)
         {
             var instances = (from DataRow row in dataTable.Rows
-                select new TagPropertiesInstance(
+                select new List<object>
+            {
                     row[s_tagNo] as string,
                     row[s_project] as string,
                     Convert.ToInt32(row[s_punchCount]),
@@ -193,7 +182,8 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
                     row[s_rfoc] as string,
                     row[s_responsible] as string,
                     row[s_status] as string
-                )).ToList();
+                }
+                ).ToList();
             return instances;
         }
 
@@ -221,7 +211,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
             }
         }
 
-        private (List<TagPropertiesInstance>, TimeSpan) GetTagPropertiesInstances(string installationCode, int currentPage, int itemsPerPage)
+        private (IEnumerable<IEnumerable<object>>, TimeSpan) GetTagPropertiesInstances(string installationCode, int currentPage, int itemsPerPage)
         {
             DataTable result = null;
 
