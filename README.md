@@ -1,4 +1,4 @@
-# pcs-dbview-api
+# procosys-dbview-api
 REST API for the Project Completion System (ProCoSys (PCS)) using ASP.NET 5
 
 ## Notes
