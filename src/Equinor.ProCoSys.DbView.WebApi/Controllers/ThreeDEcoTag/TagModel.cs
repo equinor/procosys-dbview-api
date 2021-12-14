@@ -27,6 +27,6 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
         /// List of tags
         /// </summary>
         [Required]
-        public IEnumerable<TagPropertiesInstance> Tags { get; set; }
+        public IEnumerable<IEnumerable<object>> Tags { get; set; }
     }
 }
