@@ -40,7 +40,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
                 getNextPage = nextPage.CheckLists.Count() == itemsPerPage;
             }
 
-            // total number of chgecklist pr Nov 2021 was 2665754
+            // total number of checklist pr Nov 2021 was 2665754
             Assert.IsTrue(page >= 26);
         }
 
