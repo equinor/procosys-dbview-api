@@ -7,9 +7,9 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.Misc
 {
     public class HeartbeatTestsHelper
     {
-        public static async Task<HeartbeatModel> GetHeartbeat(
+        public static async Task<HeartbeatModel> GetHeartbeatAsync(
             RestClient restClient,
-            bool checkDbIsAlive = false,
+            bool checkDbIsAlive,
             HttpStatusCode expectedStatusCode = HttpStatusCode.OK)
         {
             var requiredParameters = new ParameterCollection
