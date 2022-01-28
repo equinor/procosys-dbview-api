@@ -187,30 +187,6 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
             return instances;
         }
 
-        private (long, TimeSpan) CountMaxAvailable(string installationCode)
-        {
-            DataTable result = null;
-            var oracleDatabase = new OracleDb(_connectionString);
-            try
-            {
-                var strSql = $@"SELECT COUNT(*) AS COUNT_ALL FROM ({s_tagQuery.Replace(s_instCodeToken, installationCode)})";
-                _logger.LogInformation($"Counting records for 3D Ecosystems for installation code {installationCode}");
-                
-                var stopWatch = new Stopwatch();
-                stopWatch.Start();
-                result = oracleDatabase.QueryDataTable(strSql);
-                stopWatch.Stop();
-                
-                var count = Convert.ToInt64(result.Rows[0]["COUNT_ALL"]);
-                return (count, stopWatch.Elapsed);
-            }
-            finally
-            {
-                result?.Dispose();
-                oracleDatabase.Close();
-            }
-        }
-
         private (IEnumerable<IEnumerable<object>>, TimeSpan) GetTagPropertiesInstances(string installationCode, int currentPage, int itemsPerPage)
         {
             DataTable result = null;

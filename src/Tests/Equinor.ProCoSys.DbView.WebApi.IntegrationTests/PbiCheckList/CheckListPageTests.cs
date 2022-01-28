@@ -31,7 +31,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
 
             while (getNextPage)
             {
-                var (nextPage, timeUsed) = await GetPageUsingClientWithAccess(page, itemsPerPage);
+                var (nextPage, timeUsed) = await GetPageUsingClientWithAccessAsync(page, itemsPerPage);
                 
                 ShowModel($"Page {page}", nextPage, timeUsed);
                 AssertModel(nextPage, itemsPerPage, false);
@@ -41,7 +41,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
             }
 
             // total number of checklist pr Nov 2021 was 2665754
-            Assert.IsTrue(page >= 26);
+            Assert.IsTrue(page >= 6);
         }
 
         [TestCategory("Local")]
@@ -52,7 +52,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
             TimeSpan timeUsed;
             PbiCheckListModel prevPage;
 
-            (prevPage, timeUsed) = await GetPageUsingClientWithAccess(0, itemsPerPage);
+            (prevPage, timeUsed) = await GetPageUsingClientWithAccessAsync(0, itemsPerPage);
             ShowModel("Page 0", prevPage, timeUsed);
             AssertModel(prevPage, itemsPerPage);
             
@@ -60,7 +60,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
             foreach (var page in pages)
             {
                 PbiCheckListModel nextPage;
-                (nextPage, timeUsed) = await GetPageUsingClientWithAccess(page, itemsPerPage);
+                (nextPage, timeUsed) = await GetPageUsingClientWithAccessAsync(page, itemsPerPage);
                 ShowModel($"Page {page}", nextPage, timeUsed);
                 AssertModel(nextPage, itemsPerPage);
 
@@ -79,14 +79,14 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
             TimeSpan timeUsed;
             PbiCheckListModel prevPage;
 
-            (prevPage, timeUsed) = await GetPageUsingClientWithAccess(0, itemsPerPage);
+            (prevPage, timeUsed) = await GetPageUsingClientWithAccessAsync(0, itemsPerPage);
             ShowModel("Page 0", prevPage, timeUsed);
             AssertModel(prevPage, itemsPerPage);
 
             for (var idx = 1; idx < 5; idx++)
             {
                 PbiCheckListModel nextPage;
-                (nextPage, timeUsed) = await GetPageUsingClientWithAccess(page, itemsPerPage);
+                (nextPage, timeUsed) = await GetPageUsingClientWithAccessAsync(page, itemsPerPage);
                 ShowModel($"Page {page}, try #{idx}", nextPage, timeUsed);
                 AssertModel(nextPage, itemsPerPage);
 
@@ -105,7 +105,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
             PbiCheckListModel prevPage;
             var page = 40;
 
-            (prevPage, timeUsed) = await GetPageUsingClientWithAccess(page, itemsPerPage);
+            (prevPage, timeUsed) = await GetPageUsingClientWithAccessAsync(page, itemsPerPage);
             ShowModel($"Page {page}", prevPage, timeUsed);
             AssertModel(prevPage, 0);
         }
@@ -118,7 +118,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
             TimeSpan timeUsed;
             PbiCheckListModel page0;
 
-            (page0, timeUsed) = await GetPageUsingClientWithAccess(0, itemsPerPage);
+            (page0, timeUsed) = await GetPageUsingClientWithAccessAsync(0, itemsPerPage);
             ShowModel("Page 0", page0, timeUsed);
             AssertModel(page0, itemsPerPage);
         }
@@ -131,7 +131,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
             TimeSpan timeUsed;
             PbiCheckListModel page0;
 
-            (page0, timeUsed) = await GetPageUsingClientWithAccess(0, itemsPerPage);
+            (page0, timeUsed) = await GetPageUsingClientWithAccessAsync(0, itemsPerPage);
             ShowModel("Page 0", page0, timeUsed);
             AssertModel(page0, itemsPerPage);
         }
@@ -145,7 +145,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
             TimeSpan timeUsed;
             PbiCheckListModel page0;
 
-            (page0, timeUsed) = await GetPageUsingClientWithAccess(0, itemsPerPage, CheckListTestsHelper.CreateDateOffsetToday(daysOffset*-1));
+            (page0, timeUsed) = await GetPageUsingClientWithAccessAsync(0, itemsPerPage, CheckListTestsHelper.CreateDateOffsetToday(daysOffset*-1));
             ShowModel("Page 0", page0, timeUsed);
             AssertModel(page0, itemsPerPage, false);
             Assert.IsTrue(page0.CheckLists.Count() < itemsPerPage,
@@ -160,7 +160,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
             TimeSpan timeUsed;
             PbiCheckListModel page0;
 
-            (page0, timeUsed) = await GetPageUsingClientWithAccess(0, itemsPerPage, CheckListTestsHelper.CreateDateOffsetToday(1));
+            (page0, timeUsed) = await GetPageUsingClientWithAccessAsync(0, itemsPerPage, CheckListTestsHelper.CreateDateOffsetToday(1));
             ShowModel("Page 0", page0, timeUsed);
             AssertModel(page0, 0);
         }
@@ -188,7 +188,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
             Assert.AreEqual(idsPrevPage.Count + idsNextPage.Count, allDistinctIds.Count());
         }
 
-        private async Task<(PbiCheckListModel, TimeSpan)> GetPageUsingClientWithAccess(int currentPage, int itemsPerPage, string cutoffDate = null)
+        private async Task<(PbiCheckListModel, TimeSpan)> GetPageUsingClientWithAccessAsync(int currentPage, int itemsPerPage, string cutoffDate = null)
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();
