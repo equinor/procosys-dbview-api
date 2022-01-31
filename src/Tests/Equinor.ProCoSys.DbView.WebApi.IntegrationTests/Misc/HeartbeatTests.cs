@@ -11,16 +11,18 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.Misc
         [TestMethod]
         public async Task A1_ShouldReturnHeartbeatIfNotAuthenticated()
         {
-            var model = await HeartbeatTestsHelper.GetHeartbeat(NotAuthenticatedRestClient);
+            var model = await HeartbeatTestsHelper.GetHeartbeatAsync(NotAuthenticatedRestClient, true);
             Assert.IsTrue(model.IsAlive);
+            Assert.IsTrue(model.IsDbAlive);
         }
 
         [TestCategory("All")]
         [TestMethod]
         public async Task A2_ShouldReturnHeartbeatWhenClientHasNoRoles()
         {
-            var model = await HeartbeatTestsHelper.GetHeartbeat(ClientWithoutAnyRoles);
+            var model = await HeartbeatTestsHelper.GetHeartbeatAsync(ClientWithoutAnyRoles, true);
             Assert.IsTrue(model.IsAlive);
+            Assert.IsTrue(model.IsDbAlive);
         }
     }
 }

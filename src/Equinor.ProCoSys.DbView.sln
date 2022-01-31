@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30907.101
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Equinor.ProCoSys.DbView.WebApi", "Equinor.ProCoSys.DbView.WebApi\Equinor.ProCoSys.DbView.WebApi.csproj", "{07433EB9-9321-4609-9A6D-E51CD88E7288}"
 EndProject
@@ -19,27 +19,17 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
-		Production|Any CPU = Production|Any CPU
 		Release|Any CPU = Release|Any CPU
-		Test|Any CPU = Test|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{07433EB9-9321-4609-9A6D-E51CD88E7288}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{07433EB9-9321-4609-9A6D-E51CD88E7288}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{07433EB9-9321-4609-9A6D-E51CD88E7288}.Production|Any CPU.ActiveCfg = Production|Any CPU
-		{07433EB9-9321-4609-9A6D-E51CD88E7288}.Production|Any CPU.Build.0 = Production|Any CPU
 		{07433EB9-9321-4609-9A6D-E51CD88E7288}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{07433EB9-9321-4609-9A6D-E51CD88E7288}.Release|Any CPU.Build.0 = Release|Any CPU
-		{07433EB9-9321-4609-9A6D-E51CD88E7288}.Test|Any CPU.ActiveCfg = Test|Any CPU
-		{07433EB9-9321-4609-9A6D-E51CD88E7288}.Test|Any CPU.Build.0 = Test|Any CPU
 		{926BE851-54F1-4031-BF60-D3754F4B69CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{926BE851-54F1-4031-BF60-D3754F4B69CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{926BE851-54F1-4031-BF60-D3754F4B69CD}.Production|Any CPU.ActiveCfg = Production|Any CPU
-		{926BE851-54F1-4031-BF60-D3754F4B69CD}.Production|Any CPU.Build.0 = Production|Any CPU
 		{926BE851-54F1-4031-BF60-D3754F4B69CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{926BE851-54F1-4031-BF60-D3754F4B69CD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{926BE851-54F1-4031-BF60-D3754F4B69CD}.Test|Any CPU.ActiveCfg = Test|Any CPU
-		{926BE851-54F1-4031-BF60-D3754F4B69CD}.Test|Any CPU.Build.0 = Test|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

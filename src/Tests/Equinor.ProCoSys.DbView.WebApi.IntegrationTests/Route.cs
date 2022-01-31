@@ -14,6 +14,11 @@
                 public static string Get => "/api/DbView/PbiCheckList";
                 public static string Count => "/api/DbView/PbiCheckList/Count";
             }
+
+            public class ThreeDEcoTag
+            {
+                public static string Get => "/api/DbView/3DEcosystem";
+            }
         }
     }
 }
