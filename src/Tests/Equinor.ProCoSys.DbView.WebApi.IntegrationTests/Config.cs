@@ -39,5 +39,14 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests
         public static string ApplicationUrl => Instance._config["ApplicationUrl"];
         
         public static string InstCodeUnderTest => Instance._config["InstCodeUnderTest"];
+        public static string RandomInstCodeUnderTest
+        {
+            get
+            {
+                var codes = Instance._config["InstCodesUnderTest"].Split(';', StringSplitOptions.RemoveEmptyEntries);
+                var idx = new Random().Next(codes.Length);
+                return codes[idx];
+            }
+        }
     }
 }

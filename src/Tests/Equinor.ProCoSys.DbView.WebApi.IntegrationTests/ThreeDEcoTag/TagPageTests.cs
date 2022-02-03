@@ -15,12 +15,12 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
         [TestCategory("All")]
         [TestMethod]
         public async Task A1_ShouldReturnUnauthorizedIfNotAuthenticated()
-            => await TagTestsHelper.GetTagPage(NotAuthenticatedRestClient, null, 0, 10, HttpStatusCode.Unauthorized);
+            => await TagTestsHelper.GetTagPage(NotAuthenticatedRestClient, Config.InstCodeUnderTest, 0, 10, HttpStatusCode.Unauthorized);
         
         [TestCategory("All")]
         [TestMethod]
         public async Task A2_ShouldReturnForbiddenIfNoAccess()
-            => await TagTestsHelper.GetTagPage(ClientWithoutAnyRoles, null, 0, 10, HttpStatusCode.Forbidden);
+            => await TagTestsHelper.GetTagPage(ClientWithoutAnyRoles, Config.InstCodeUnderTest, 0, 10, HttpStatusCode.Forbidden);
 
         [TestCategory("Local")]
         [TestMethod]
@@ -30,9 +30,11 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
             var getNextPage = true;
             var page = 0;
 
+            var instCode = Config.RandomInstCodeUnderTest;
+
             while (getNextPage)
             {
-                var (nextPage, timeUsed) = await GetPageUsingClientWithAccessAsync(page, itemsPerPage);
+                var (nextPage, timeUsed) = await GetPageUsingClientWithAccessAsync(instCode, page, itemsPerPage);
                 
                 ShowModel($"Page {page}", nextPage, timeUsed);
                 AssertModel(nextPage, itemsPerPage, false);
@@ -47,13 +49,13 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
 
         [TestCategory("Local")]
         [TestMethod]
-        public async Task B2_ShouldGetRandomTagPages()
+        public async Task B2_ShouldGetDifferentTagPages()
         {
             const int itemsPerPage = 50000;
             TimeSpan timeUsed;
             TagModel prevPage;
 
-            (prevPage, timeUsed) = await GetPageUsingClientWithAccessAsync(0, itemsPerPage);
+            (prevPage, timeUsed) = await GetPageUsingClientWithAccessAsync(Config.InstCodeUnderTest, 0, itemsPerPage);
             ShowModel("Page 0", prevPage, timeUsed);
             AssertModel(prevPage, itemsPerPage);
             
@@ -61,7 +63,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
             foreach (var page in pages)
             {
                 TagModel nextPage;
-                (nextPage, timeUsed) = await GetPageUsingClientWithAccessAsync(page, itemsPerPage);
+                (nextPage, timeUsed) = await GetPageUsingClientWithAccessAsync(Config.InstCodeUnderTest, page, itemsPerPage);
                 ShowModel($"Page {page}", nextPage, timeUsed);
                 AssertModel(nextPage, itemsPerPage);
 
@@ -79,15 +81,16 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
             const int itemsPerPage = 10000;
             TimeSpan timeUsed;
             TagModel prevPage;
+            var instCode = Config.InstCodeUnderTest;
 
-            (prevPage, timeUsed) = await GetPageUsingClientWithAccessAsync(0, itemsPerPage);
+            (prevPage, timeUsed) = await GetPageUsingClientWithAccessAsync(instCode, 0, itemsPerPage);
             ShowModel("Page 0", prevPage, timeUsed);
             AssertModel(prevPage, itemsPerPage);
 
             for (var idx = 1; idx < 3; idx++)
             {
                 TagModel nextPage;
-                (nextPage, timeUsed) = await GetPageUsingClientWithAccessAsync(page, itemsPerPage);
+                (nextPage, timeUsed) = await GetPageUsingClientWithAccessAsync(instCode, page, itemsPerPage);
                 ShowModel($"Page {page}, try #{idx}", nextPage, timeUsed);
                 AssertModel(nextPage, itemsPerPage);
 
@@ -105,8 +108,9 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
             TimeSpan timeUsed;
             TagModel prevPage;
             var page = 10;
+            var instCode = Config.RandomInstCodeUnderTest;
 
-            (prevPage, timeUsed) = await GetPageUsingClientWithAccessAsync(page, itemsPerPage);
+            (prevPage, timeUsed) = await GetPageUsingClientWithAccessAsync(instCode, page, itemsPerPage);
             ShowModel($"Page {page}", prevPage, timeUsed);
             AssertModel(prevPage, 0);
         }
@@ -118,8 +122,9 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
             const int itemsPerPage = 100;
             TimeSpan timeUsed;
             TagModel page0;
+            var instCode = Config.RandomInstCodeUnderTest;
 
-            (page0, timeUsed) = await GetPageUsingClientWithAccessAsync(0, itemsPerPage);
+            (page0, timeUsed) = await GetPageUsingClientWithAccessAsync(instCode, 0, itemsPerPage);
             ShowModel("Page 0", page0, timeUsed);
             AssertModel(page0, itemsPerPage);
         }
@@ -164,11 +169,12 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
             Assert.AreEqual(tagsPrevPage.Count + tagsNextPage.Count, allDistinctTags.Count());
         }
 
-        private async Task<(TagModel, TimeSpan)> GetPageUsingClientWithAccessAsync(int currentPage, int itemsPerPage)
+        private async Task<(TagModel, TimeSpan)> GetPageUsingClientWithAccessAsync(string installationCode, int currentPage, int itemsPerPage)
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();
-            var TagModel = await TagTestsHelper.GetTagPage(ClientWithAccess, Config.InstCodeUnderTest, currentPage, itemsPerPage);
+            Console.WriteLine($"{DateTime.Now}: Getting {itemsPerPage} tags at page {currentPage} from '{installationCode}'");
+            var TagModel = await TagTestsHelper.GetTagPage(ClientWithAccess, installationCode, currentPage, itemsPerPage);
             stopWatch.Stop();
             return (TagModel, stopWatch.Elapsed);
         }
