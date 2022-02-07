@@ -90,6 +90,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();
+            Console.WriteLine($"{DateTime.Now}: Getting max available. Cutoff='{cutoffDate}'");
             var checkListModel = await CheckListTestsHelper.GetMaxAvailable(ClientWithAccess, cutoffDate);
             stopWatch.Stop();
             return (checkListModel, stopWatch.Elapsed);
