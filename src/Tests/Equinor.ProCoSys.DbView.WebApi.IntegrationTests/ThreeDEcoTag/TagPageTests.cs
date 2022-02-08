@@ -43,7 +43,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
                 getNextPage = nextPage.Tags.Count() == itemsPerPage;
             }
 
-            // total number of tags from from HOLO$COMMPKG_TAG view in Johan Sverdrup pr Jan 2022 was 392792
+            // total number of tags from from HOLO$COMMPKG_TAG view in Johan Sverdrup pr Feb 2022 was 414092
             Assert.IsTrue(page >= 3);
         }
 
