@@ -122,7 +122,7 @@ stages:
 # deploy_production
 - stage: deploy_production
   displayName: 'Deploy to Production'
-  dependsOn: 'runtest_test'
+  dependsOn: 'build'
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   variables:
     serviceConnection: '${{variables.prodServiceConnection}}'

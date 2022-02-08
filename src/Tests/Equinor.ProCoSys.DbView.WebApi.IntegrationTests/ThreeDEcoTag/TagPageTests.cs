@@ -22,7 +22,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
         public async Task A2_ShouldReturnForbiddenIfNoAccess()
             => await TagTestsHelper.GetTagPage(ClientWithoutAnyRoles, Config.InstCodeUnderTest, 0, 10, HttpStatusCode.Forbidden);
 
-        [TestCategory("Local")]
+        [TestCategory("All")]
         [TestMethod]
         public async Task B1_ShouldGetAllTagPages()
         {
@@ -47,7 +47,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
             Assert.IsTrue(page >= 3);
         }
 
-        [TestCategory("Local")]
+        [TestCategory("All")]
         [TestMethod]
         public async Task B2_ShouldGetDifferentTagPages()
         {
@@ -73,7 +73,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
             }
         }
 
-        [TestCategory("Local")]
+        [TestCategory("All")]
         [TestMethod]
         public async Task D_ShouldGetSameTagPage()
         {
@@ -99,8 +99,8 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
                 prevPage = nextPage;
             }
         }
-        
-        [TestCategory("Test")]
+
+        [TestCategory("All")]
         [TestMethod]
         public async Task C_ShouldGetEmptyTagPageFromPageBehindLastPage()
         {
@@ -114,8 +114,8 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
             ShowModel($"Page {page}", prevPage, timeUsed);
             AssertModel(prevPage, 0);
         }
-        
-        [TestCategory("Test")]
+
+        [TestCategory("All")]
         [TestMethod]
         public async Task E_ShouldGetSmallTagPage()
         {
