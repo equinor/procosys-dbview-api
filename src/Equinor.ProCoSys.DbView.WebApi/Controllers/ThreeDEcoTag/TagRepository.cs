@@ -29,98 +29,88 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
         private static readonly string s_status = "Status";
 
         private static readonly string s_instCodeToken = "[INSTCODE]";
-        
+
+
         private static readonly string s_tagQuery =
-            $@"SELECT 
-                 CT.TAGNO AS ""{s_tagNo}"",
-                 CT.PROJECT AS ""{s_project}"",
-                 COUNT (P.PUNCHTYPE) AS ""{s_punchCount}"",
-                 CT.COMMPKGNO AS ""{s_commPkgNo}"",
-                 H.DESCRIPTION AS ""{s_commPkgDesc}"",
-                 MCPT.MCPKGNO AS ""{s_mcPkgNo}"",
-                 MCP.DESCRIPTION AS ""{s_mcPkgDesc}"",
-                 H.PRIORITY AS ""{s_priority}"",
-                 H.PHASE AS ""{s_phase}"",
-                 (CASE
-                     WHEN H.CNT_MCPKGS_WITH_RFCC_SIGNED = 0
-                     THEN
-                        'Not sent'
-                     WHEN     H.CNT_MCPKGS_WITH_RFCC_SIGNED > 0
-                          AND H.CNT_MCPKGS_WITH_RFCC_SIGNED < H.CNT_MCPKGS
-                     THEN
-                        'Partly accepted'
-                     WHEN H.CNT_MCPKGS_WITH_RFCC_SIGNED = H.CNT_MCPKGS
-                     THEN
-                        'Fully accepted'
-                  END)
-                    AS ""{s_rfcc}"",
-                 (CASE
-                     WHEN H.CNT_MCPKGS_WITH_RFOC_SIGNED = 0
-                     THEN
-                        'Not sent'
-                     WHEN     H.CNT_MCPKGS_WITH_RFOC_SIGNED > 0
-                          AND H.CNT_MCPKGS_WITH_RFOC_SIGNED < H.CNT_MCPKGS
-                     THEN
-                        'Partly accepted'
-                     WHEN H.CNT_MCPKGS_WITH_RFOC_SIGNED = H.CNT_MCPKGS
-                     THEN
-                        'Fully accepted'
-                  END)
-                    AS ""{s_rfoc}"",
-                 T.FORMRESPONSIBLE AS ""{s_responsible}"",
-                 T.FORMSTATUS AS ""{s_status}""
-            FROM PROCOSYS_TIE.HOLO$COMMPKG_TAG CT
-                 LEFT JOIN PROCOSYS_TIE.TIME$HANDOVER H
-                    ON (CT.PLANT = H.PLANT AND CT.COMMPKGNO = H.COMMPKGNO)
-                 LEFT JOIN PROCOSYS_TIE.HOLO$PUNCH P
-                    ON (CT.PLANT = P.PLANT AND CT.TAGNO = P.TAGNO)
-                 LEFT JOIN PROCOSYS_TIE.HOLO$TAGCHECK T
-                    ON (    CT.PLANT = T.PLANT
-                        AND CT.PROJECT = T.PROJECT
-                        AND CT.TAGNO = T.TAGNO)
-                 LEFT JOIN PROCOSYS_TIE.HOLO$MCPKG_TAG MCPT
-                    ON (    CT.PLANT = MCPT.PLANT
-                        AND CT.PROJECT = MCPT.PROJECT
-                        AND CT.TAGNO = MCPT.TAGNO)
-                 LEFT JOIN PROCOSYS_TIE.HOLO$MCPKG MCP
-                    ON (    CT.PLANT = MCP.PLANT
-                        AND CT.PROJECT = MCP.PROJECT
-                        AND MCPT.MCPKGNO = MCP.MCPKGNO)
-           WHERE CT.PLANT = '{s_instCodeToken}'
-        GROUP BY CT.TAGNO,
-                 CT.PROJECT,
-                 CT.COMMPKGNO,
-                 H.DESCRIPTION,
-                 H.PRIORITY,
-                 H.PHASE,
-                 (CASE
-                     WHEN H.CNT_MCPKGS_WITH_RFCC_SIGNED = 0
-                     THEN
-                        'Not sent'
-                     WHEN     H.CNT_MCPKGS_WITH_RFCC_SIGNED > 0
-                          AND H.CNT_MCPKGS_WITH_RFCC_SIGNED < H.CNT_MCPKGS
-                     THEN
-                        'Partly accepted'
-                     WHEN H.CNT_MCPKGS_WITH_RFCC_SIGNED = H.CNT_MCPKGS
-                     THEN
-                        'Fully accepted'
-                  END),
-                 (CASE
-                     WHEN H.CNT_MCPKGS_WITH_RFOC_SIGNED = 0
-                     THEN
-                        'Not sent'
-                     WHEN     H.CNT_MCPKGS_WITH_RFOC_SIGNED > 0
-                          AND H.CNT_MCPKGS_WITH_RFOC_SIGNED < H.CNT_MCPKGS
-                     THEN
-                        'Partly accepted'
-                     WHEN H.CNT_MCPKGS_WITH_RFOC_SIGNED = H.CNT_MCPKGS
-                     THEN
-                        'Fully accepted'
-                  END),
-                 T.FORMRESPONSIBLE,
-                 T.FORMSTATUS,
-                 MCPT.MCPKGNO,
-                 MCP.DESCRIPTION";
+            $@"SELECT T.TAGNO AS ""{s_tagNo}"",
+                   PR.NAME AS ""{s_project}"",
+                   MC.MCPKGNO AS ""{s_mcPkgNo}"",
+                   MC.DESCRIPTION AS ""{s_mcPkgDesc}"",
+                   C.COMMPKGNO AS ""{s_commPkgNo}"",
+                   C.DESCRIPTION AS ""{s_commPkgDesc}"",
+                   PRI.CODE AS ""{s_priority}"",
+                   PH.CODE AS ""{s_phase}"",
+                   RES.CODE AS ""{s_responsible}"",
+                   STAT.CODE AS ""{s_status}"",
+                   (SELECT COUNT(1)
+                      FROM PROCOSYS.PUNCHLISTITEM PI
+                     WHERE     PI.TAGCHECK_ID = TC.TAGCHECK_ID
+                           AND PI.ISVOIDED = 'N'
+                           AND ((PI.CLEAREDAT IS NULL) OR (PI.REJECTEDAT IS NOT NULL)))
+                      AS ""{s_punchCount}"",
+                   CASE
+                      WHEN H.CNT_MCPKGS_WITH_RFCC_SIGNED = 0
+                      THEN
+                         'Not sent'
+                      WHEN H.CNT_MCPKGS_WITH_RFCC_SIGNED > 0
+                           AND H.CNT_MCPKGS_WITH_RFCC_SIGNED<H.CNT_MCPKGS
+                      THEN
+                         'Partly accepted'
+                      WHEN H.CNT_MCPKGS_WITH_RFCC_SIGNED = H.CNT_MCPKGS
+                      THEN
+                         'Fully accepted'
+                   END
+                      AS ""{s_rfcc}"",
+                   CASE
+                      WHEN H.CNT_MCPKGS_WITH_RFOC_SIGNED = 0
+                      THEN
+                         'Not sent'
+                      WHEN     H.CNT_MCPKGS_WITH_RFOC_SIGNED> 0
+                           AND H.CNT_MCPKGS_WITH_RFOC_SIGNED<H.CNT_MCPKGS
+                      THEN
+                         'Partly accepted'
+                      WHEN H.CNT_MCPKGS_WITH_RFOC_SIGNED = H.CNT_MCPKGS
+                      THEN
+                         'Fully accepted'
+                   END
+                      AS ""{s_rfoc}""
+              FROM PROCOSYS.TAG T
+                   INNER JOIN PROCOSYS.PROJECT PR
+                      ON     PR.PROJECT_ID = T.PROJECT_ID
+                         AND PR.ISCLOSED = 'N'
+                         AND (PR.NAME LIKE '_.%')
+                   INNER JOIN PROCOSYS.LIBRARY FAC ON FAC.LIBRARY_ID = T.INSTALLATION_ID
+                   INNER JOIN PROCOSYS.LIBRARY LIB_REGISTER
+                      ON LIB_REGISTER.LIBRARY_ID = T.REGISTER_ID
+                         AND LIB_REGISTER.CODE IN ('INSTRUMENT_FIELD',
+                                                   'MAIN_EQUIPMENT',
+                                                   'ELECTRICAL_FIELD',
+                                                   'FIRE_AND_GAS_FIELD',
+                                                   'JUNCTION_BOX',
+                                                   'MANUAL_VALVE',
+                                                   'TELECOM_FIELD',
+                                                   'SPECIAL_ITEM',
+                                                   'CIVIL',
+                                                   'PIPE_SUPPORT',
+                                                   'DUCTING',
+                                                   'PIPELINE',
+                                                   'HOSE_ASSEMBLY',
+                                                   'LINE')
+                   LEFT OUTER JOIN PROCOSYS.MCPKG MC ON MC.MCPKG_ID = T.MCPKG_ID
+                   LEFT OUTER JOIN PROCOSYS.COMMPKG C ON C.COMMPKG_ID = MC.COMMPKG_ID
+                   LEFT OUTER JOIN PROCOSYS.LIBRARY PRI
+                      ON PRI.LIBRARY_ID = C.COMMPRIORITY_ID
+                   LEFT OUTER JOIN PROCOSYS.LIBRARY PH ON PH.LIBRARY_ID = C.COMMPHASE_ID
+                   LEFT OUTER JOIN PROCOSYS.TAGFORMULARTYPE TFT ON TFT.TAG_ID = T.TAG_ID
+                   LEFT OUTER JOIN PROCOSYS.TAGCHECK TC
+                      ON TC.TAGFORMULARTYPE_ID = TFT.TAGFORMULARTYPE_ID
+                   LEFT OUTER JOIN PROCOSYS.RESPONSIBLE RES
+                      ON RES.RESPONSIBLE_ID = TC.RESPONSIBLE_ID
+                   LEFT OUTER JOIN PROCOSYS.LIBRARY STAT
+                      ON STAT.LIBRARY_ID = TC.STATUS_ID
+                   LEFT OUTER JOIN PROCOSYS_TIE.TIME$HANDOVER H
+                      ON H.COMMPKG_ID = C.COMMPKG_ID
+             WHERE FAC.CODE = '{s_instCodeToken}' ";
 
         public TagRepository(
             IConfiguration configuration,
@@ -197,10 +187,10 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
                 var strSql = s_tagQuery.Replace(s_instCodeToken, installationCode);
                 var message = $"Getting {itemsPerPage} records at page {currentPage} for 3D Ecosystems for installation code {installationCode}";
                 strSql += 
-                    $@" ORDER BY CT.TAGNO,
-                     CT.PROJECT,
-                     CT.COMMPKGNO,
-                     T.FORMRESPONSIBLE
+                    $@" ORDER BY T.TAGNO,
+                     PR.NAME,
+                     C.COMMPKGNO,
+                     RES.CODE
                     OFFSET {currentPage * itemsPerPage} ROWS FETCH NEXT {itemsPerPage} ROWS ONLY";
                 _logger.LogInformation(message);
                 

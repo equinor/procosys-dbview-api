@@ -119,7 +119,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
         [TestMethod]
         public async Task E_ShouldGetSmallTagPage()
         {
-            const int itemsPerPage = 100;
+            const int itemsPerPage = 5;
             TimeSpan timeUsed;
             TagModel page0;
             var instCode = Config.RandomInstCodeUnderTest;
