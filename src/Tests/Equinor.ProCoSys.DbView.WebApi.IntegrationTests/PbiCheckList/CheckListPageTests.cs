@@ -46,7 +46,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
 
         [TestCategory("Local")]
         [TestMethod]
-        public async Task B2_ShouldGetRandomCheckListPages()
+        public async Task B2_ShouldGetDifferentCheckListPages()
         {
             const int itemsPerPage = 100000;
             TimeSpan timeUsed;
