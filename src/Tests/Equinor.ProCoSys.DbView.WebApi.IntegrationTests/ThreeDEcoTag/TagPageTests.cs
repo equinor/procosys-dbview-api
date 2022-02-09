@@ -30,7 +30,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
             var getNextPage = true;
             var page = 0;
 
-            var instCode = Config.RandomInstCodeUnderTest;
+            var instCode = Config.InstCodeUnderTest;
 
             while (getNextPage)
             {
