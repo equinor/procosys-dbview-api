@@ -168,8 +168,10 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
                     row[s_mcPkgDesc] as string,
                     row[s_priority] as string,
                     row[s_phase] as string,
-                    row[s_rfcc] as string,
-                    row[s_rfoc] as string,
+                    //row[s_rfcc] as string,
+                    //row[s_rfoc] as string,
+                    "na",
+                    "na",
                     row[s_responsible] as string,
                     row[s_status] as string
                 }
@@ -187,10 +189,11 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
                 var strSql = s_tagQuery.Replace(s_instCodeToken, installationCode);
                 var message = $"Getting {itemsPerPage} records at page {currentPage} for 3D Ecosystems for installation code {installationCode}";
                 strSql += 
-                    $@" ORDER BY T.TAGNO,
-                     PR.NAME,
-                     C.COMMPKGNO,
-                     RES.CODE
+                    $@"
+                        ORDER BY T.TAG_ID,
+                        PR.PROJECT_ID,
+                        C.COMMPKG_id,
+                        RES.RESPONSIBLE_ID
                     OFFSET {currentPage * itemsPerPage} ROWS FETCH NEXT {itemsPerPage} ROWS ONLY";
                 _logger.LogInformation(message);
                 
