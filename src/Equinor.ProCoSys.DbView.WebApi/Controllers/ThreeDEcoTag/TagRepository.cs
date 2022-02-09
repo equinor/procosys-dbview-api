@@ -48,32 +48,8 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
                            AND PI.ISVOIDED = 'N'
                            AND ((PI.CLEAREDAT IS NULL) OR (PI.REJECTEDAT IS NOT NULL)))
                       AS ""{s_punchCount}"",
-                   CASE
-                      WHEN H.CNT_MCPKGS_WITH_RFCC_SIGNED = 0
-                      THEN
-                         'Not sent'
-                      WHEN H.CNT_MCPKGS_WITH_RFCC_SIGNED > 0
-                           AND H.CNT_MCPKGS_WITH_RFCC_SIGNED<H.CNT_MCPKGS
-                      THEN
-                         'Partly accepted'
-                      WHEN H.CNT_MCPKGS_WITH_RFCC_SIGNED = H.CNT_MCPKGS
-                      THEN
-                         'Fully accepted'
-                   END
-                      AS ""{s_rfcc}"",
-                   CASE
-                      WHEN H.CNT_MCPKGS_WITH_RFOC_SIGNED = 0
-                      THEN
-                         'Not sent'
-                      WHEN     H.CNT_MCPKGS_WITH_RFOC_SIGNED> 0
-                           AND H.CNT_MCPKGS_WITH_RFOC_SIGNED<H.CNT_MCPKGS
-                      THEN
-                         'Partly accepted'
-                      WHEN H.CNT_MCPKGS_WITH_RFOC_SIGNED = H.CNT_MCPKGS
-                      THEN
-                         'Fully accepted'
-                   END
-                      AS ""{s_rfoc}""
+                      'na' AS ""{s_rfcc}"",
+                      'na' AS ""{s_rfoc}""
               FROM PROCOSYS.TAG T
                    INNER JOIN PROCOSYS.PROJECT PR
                       ON     PR.PROJECT_ID = T.PROJECT_ID
@@ -108,8 +84,6 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
                       ON RES.RESPONSIBLE_ID = TC.RESPONSIBLE_ID
                    LEFT OUTER JOIN PROCOSYS.LIBRARY STAT
                       ON STAT.LIBRARY_ID = TC.STATUS_ID
-                   LEFT OUTER JOIN PROCOSYS_TIE.TIME$HANDOVER H
-                      ON H.COMMPKG_ID = C.COMMPKG_ID
              WHERE FAC.CODE = '{s_instCodeToken}' ";
 
         public TagRepository(
@@ -168,10 +142,8 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
                     row[s_mcPkgDesc] as string,
                     row[s_priority] as string,
                     row[s_phase] as string,
-                    //row[s_rfcc] as string,
-                    //row[s_rfoc] as string,
-                    "na",
-                    "na",
+                    row[s_rfcc] as string,
+                    row[s_rfoc] as string,
                     row[s_responsible] as string,
                     row[s_status] as string
                 }
