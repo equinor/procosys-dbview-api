@@ -2,6 +2,7 @@ trigger:
   branches:
     include:
       - master
+      - 88816/*
 
 name: $(date:yyyyMMdd)$(rev:.r)
 
