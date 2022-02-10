@@ -11,7 +11,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
         [Required]
         public string TimeUsedGettingTags { get; set; }
         public string TimeUsedGettingCommPkgs { get; set; }
-        public string TimeUsedGettingTotal { get; set; }
+        public string TimeUsedTotal { get; set; }
 
         /// <summary>
         /// Number of records returned

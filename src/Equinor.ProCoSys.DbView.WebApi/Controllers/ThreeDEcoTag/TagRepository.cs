@@ -52,9 +52,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
                      WHERE     PI.TAGCHECK_ID = TC.TAGCHECK_ID
                            AND pi.isvoided = 'N'
                            AND((PI.CLEAREDAT IS NULL) OR(PI.REJECTEDAT IS NOT NULL)))
-                      AS ""{s_punchCount}"",
-                    'na' AS ""{s_rfcc}"",
-                    'na' AS ""{s_rfoc}""
+                      AS ""{s_punchCount}""
               FROM procosys.tag t
                    INNER JOIN procosys.project pr
                       ON pr.PROJECT_ID = t.project_id
@@ -110,9 +108,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
                      WHERE     PI.TAGCHECK_ID = TC.TAGCHECK_ID
                            AND pi.isvoided = 'N'
                            AND ((PI.CLEAREDAT IS NULL) OR (PI.REJECTEDAT IS NOT NULL)))
-                      AS ""{s_punchCount}"",
-                    'na' AS ""{s_rfcc}"",
-                    'na' AS ""{s_rfoc}""
+                      AS ""{s_punchCount}""
               FROM procosys.tag t
                    INNER JOIN procosys.project pr
                       ON pr.PROJECT_ID = t.project_id
@@ -275,14 +271,14 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
             {
                 TimeUsedGettingTags = FormatTimeSpan(timeUsedGettingTags),
                 TimeUsedGettingCommPkgs = FormatTimeSpan(timeUsedGettingCommPkgs),
-                TimeUsedGettingTotal = FormatTimeSpan(stopWatch.Elapsed),
+                TimeUsedTotal = FormatTimeSpan(stopWatch.Elapsed),
                 Heading = GetTagPropertiesHeading(),
                 Tags = takeMax > 0 ? tagProperties.Take(takeMax) : tagProperties,
                 Count = tags.Count()
             };
 
             stopWatch.Stop();
-            _logger.LogInformation($"{msgPrefix} Finished during {tagModel.TimeUsedGettingTotal}");
+            _logger.LogInformation($"{msgPrefix} Finished during {tagModel.TimeUsedTotal}");
 
             return tagModel;
         }
@@ -318,8 +314,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
                 s_rfcc,
                 s_rfoc,
                 s_responsible,
-                s_status,
-                s_commPkg_Id
+                s_status
             };
 
         private static IEnumerable<IEnumerable<object>> GeTagPropertiesInstances(IList<Tag> tags)
