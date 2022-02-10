@@ -14,17 +14,17 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
     {
         [TestCategory("All")]
         [TestMethod]
-        public async Task A1_ShouldReturnUnauthorizedIfNotAuthenticated()
+        public async Task A1_GetTagPage_ShouldReturnUnauthorizedIfNotAuthenticated()
             => await TagTestsHelper.GetTagPage(NotAuthenticatedRestClient, Config.InstCodeUnderTest, 0, 10, HttpStatusCode.Unauthorized);
         
         [TestCategory("All")]
         [TestMethod]
-        public async Task A2_ShouldReturnForbiddenIfNoAccess()
+        public async Task A2_GetTagPage_ShouldReturnForbiddenIfNoAccess()
             => await TagTestsHelper.GetTagPage(ClientWithoutAnyRoles, Config.InstCodeUnderTest, 0, 10, HttpStatusCode.Forbidden);
 
         [TestCategory("All")]
         [TestMethod]
-        public async Task B1_ShouldGetAllTagPages()
+        public async Task B1_GetTagPage_ShouldGetAllTagPages()
         {
             const int itemsPerPage = 100000;
             var getNextPage = true;
@@ -49,7 +49,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
 
         [TestCategory("All")]
         [TestMethod]
-        public async Task B2_ShouldGetDifferentTagPages()
+        public async Task B2_GetTagPage_ShouldGetDifferentTagPages()
         {
             const int itemsPerPage = 50000;
             TimeSpan timeUsed;
@@ -75,7 +75,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
 
         [TestCategory("All")]
         [TestMethod]
-        public async Task D_ShouldGetSameTagPage()
+        public async Task D_GetTagPage_ShouldGetSameTagPage()
         {
             const int page = 0;
             const int itemsPerPage = 10000;
@@ -102,7 +102,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
 
         [TestCategory("All")]
         [TestMethod]
-        public async Task C_ShouldGetEmptyTagPageFromPageBehindLastPage()
+        public async Task C_GetTagPage_ShouldGetEmptyTagPageFromPageBehindLastPage()
         {
             const int itemsPerPage = 100000;
             TimeSpan timeUsed;
@@ -117,7 +117,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
 
         [TestCategory("All")]
         [TestMethod]
-        public async Task E_ShouldGetSmallTagPage()
+        public async Task E_GetTagPage_ShouldGetSmallTagPage()
         {
             const int itemsPerPage = 5;
             TimeSpan timeUsed;

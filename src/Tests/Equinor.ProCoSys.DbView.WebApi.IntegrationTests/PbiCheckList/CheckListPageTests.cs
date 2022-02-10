@@ -13,17 +13,17 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
     {
         [TestCategory("All")]
         [TestMethod]
-        public async Task A1_ShouldReturnUnauthorizedIfNotAuthenticated()
+        public async Task A1_GetCheckListPage_ShouldReturnUnauthorizedIfNotAuthenticated()
             => await CheckListTestsHelper.GetCheckListPage(NotAuthenticatedRestClient, null, 0, 10, HttpStatusCode.Unauthorized);
         
         [TestCategory("All")]
         [TestMethod]
-        public async Task A2_ShouldReturnForbiddenIfNoAccess()
+        public async Task A2_GetCheckListPage_ShouldReturnForbiddenIfNoAccess()
             => await CheckListTestsHelper.GetCheckListPage(ClientWithoutAnyRoles, null, 0, 10, HttpStatusCode.Forbidden);
 
         [TestCategory("Local")]
         [TestMethod]
-        public async Task B1_ShouldGetAllCheckListPages()
+        public async Task B1_GetCheckListPage_ShouldGetAllCheckListPages()
         {
             const int itemsPerPage = 500000;
             var getNextPage = true;
@@ -46,7 +46,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
 
         [TestCategory("Local")]
         [TestMethod]
-        public async Task B2_ShouldGetDifferentCheckListPages()
+        public async Task B2_GetCheckListPage_ShouldGetDifferentCheckListPages()
         {
             const int itemsPerPage = 100000;
             TimeSpan timeUsed;
@@ -72,7 +72,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
 
         [TestCategory("Local")]
         [TestMethod]
-        public async Task D_ShouldGetSameCheckListPage()
+        public async Task D_GetCheckListPage_ShouldGetSameCheckListPage()
         {
             const int page = 0;
             const int itemsPerPage = 100000;
@@ -98,7 +98,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
         
         [TestCategory("Test")]
         [TestMethod]
-        public async Task C_ShouldGetEmptyCheckListPageFromPageBehindLastPage()
+        public async Task C_GetCheckListPage_ShouldGetEmptyCheckListPageFromPageBehindLastPage()
         {
             const int itemsPerPage = 100000;
             TimeSpan timeUsed;
@@ -112,7 +112,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
         
         [TestCategory("Test")]
         [TestMethod]
-        public async Task E_ShouldGetSmallCheckListPage()
+        public async Task E_GetCheckListPage_ShouldGetSmallCheckListPage()
         {
             const int itemsPerPage = 100;
             TimeSpan timeUsed;
@@ -125,7 +125,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
 
         [TestCategory("Test")]
         [TestMethod]
-        public async Task F_ShouldGetBigCheckListPage()
+        public async Task F_GetCheckListPage_ShouldGetBigCheckListPage()
         {
             const int itemsPerPage = 500000;
             TimeSpan timeUsed;
@@ -138,7 +138,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
 
         [TestCategory("Test")]
         [TestMethod]
-        public async Task G1_ShouldGetCheckListPageWithCutoffDate()
+        public async Task G1_GetCheckListPage_ShouldGetCheckListPageWithCutoffDate()
         {
             const int daysOffset = 60;
             const int itemsPerPage = 200000;
@@ -154,7 +154,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
 
         [TestCategory("Test")]
         [TestMethod]
-        public async Task G2_ShouldGetEmptyCheckListPageWithFutureCutoffDate()
+        public async Task G2_GetCheckListPage_ShouldGetEmptyCheckListPageWithFutureCutoffDate()
         {
             const int itemsPerPage = 100000;
             TimeSpan timeUsed;
