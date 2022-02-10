@@ -140,6 +140,109 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
                       ON stat.LIBRARY_ID = TC.STATUS_ID
                 WHERE FAC.CODE = '{s_instCodeToken}'";
 
+        private static readonly string s_mcPkgCount = "McPkgCount";
+        private static readonly string s_mcPkgsSentToCommissioning = "McPkgsSentToCommissioning";
+        private static readonly string s_mcPkgsAcceptedByCommissioning = "McPkgsAcceptedByCommissioning";
+        private static readonly string s_mcPkgsRejectedByCommissioning = "McPkgsRejectedByCommissioning";
+        private static readonly string s_mcPkgsSentToOperation = "McPkgsSentToOperation";
+        private static readonly string s_mcPkgsAcceptedByOperation = "McPkgsAcceptedByOperation";
+        private static readonly string s_mcPkgsRejectedByOperation = "McPkgsRejectedByOperation";
+
+        private static readonly string s_commPkgIdsToken = "[COMMPKGIDS]";
+        private static readonly string s_commPkgQuery =
+            @$"SELECT 
+                    CP.COMMPKG_ID AS ""{s_commPkg_Id}"",
+                    (SELECT COUNT (*)
+                        FROM MCPKG MP
+                            JOIN ELEMENT MP_
+                                ON (MP_.ELEMENT_ID = MP.MCPKG_ID AND MP_.ISVOIDED = 'N')
+                        WHERE MP.COMMPKG_ID = CP.COMMPKG_ID)
+                        AS ""{s_mcPkgCount}"",
+                    (SELECT COUNT (MP.MCPKG_ID)
+                        FROM V$CERTIFICATE C
+                            JOIN CERTIFICATESCOPE CS
+                                ON (CS.CERTIFICATE_ID = C.CERTIFICATE_ID AND REJECTED = 'N')
+                            JOIN MCPKG MP ON (MP.MCPKG_ID = CS.MCPKG_ID)
+                        WHERE     MP.COMMPKG_ID = CP.COMMPKG_ID
+                            AND C.CERTIFICATETYPE IN ('RFCC', 'RFSC')
+                            AND C.ISVOIDED = 'N'
+                            AND C.ISSENT = 'Y'
+                            AND C.ISREJECTED = 'N')
+                        AS ""{s_mcPkgsSentToCommissioning}"",
+                    (  (SELECT COUNT (MP.MCPKG_ID)
+                            FROM V$CERTIFICATE C
+                                JOIN CERTIFICATESCOPE CS
+                                    ON (    CS.CERTIFICATE_ID = C.CERTIFICATE_ID
+                                        AND REJECTED = 'N')
+                                JOIN MCPKG MP ON (MP.MCPKG_ID = CS.MCPKG_ID)
+                        WHERE     MP.COMMPKG_ID = CP.COMMPKG_ID
+                                AND C.CERTIFICATETYPE = 'RFCC'
+                                AND C.ISVOIDED = 'N'
+                                AND C.ISACCEPTED = 'Y')
+
+                    /* RFSC HAS TWO ACCEPTED SIGNATURES, ONE FOR COMM AND ONE FOR OP. V$CERTIFICATE.ISACCEPTED ONLY REFLECTS OP. */
+                    + (SELECT COUNT (MP.MCPKG_ID)
+                            FROM V$CERTIFICATE C
+                                JOIN CERTIFICATESCOPE CS
+                                    ON (    CS.CERTIFICATE_ID = C.CERTIFICATE_ID
+                                        AND REJECTED = 'N')
+                                JOIN MCPKG MP ON (MP.MCPKG_ID = CS.MCPKG_ID)
+                        WHERE     MP.COMMPKG_ID = CP.COMMPKG_ID
+                                AND C.CERTIFICATETYPE = 'RFSC'
+                                AND C.ISVOIDED = 'N'
+                                AND EXISTS
+                                        (SELECT 1
+                                        FROM CERTIFICATESIGNATURE SIG
+                                                JOIN LIBTOLIBRELATION LTL
+                                                ON (    LTL.LIBRARY_ID = SIG.STATUS_ID
+                                                    AND LTL.ROLE = 'Classification')
+                                                JOIN LIBRARY RL
+                                                ON (RL.LIBRARY_ID = LTL.RELATEDLIBRARY_ID)
+                                        WHERE     SIG.CERTIFICATE_ID = C.CERTIFICATE_ID
+                                                AND RL.CODE = 'ACCEPTED'
+                                                AND SIGNEDAT IS NOT NULL)))
+                        AS ""{s_mcPkgsAcceptedByCommissioning}"",
+                    (SELECT COUNT (DISTINCT MP.MCPKG_ID)
+                        FROM V$CERTIFICATE C
+                            JOIN CERTIFICATESCOPE CS
+                                ON (CS.CERTIFICATE_ID = C.CERTIFICATE_ID AND REJECTED = 'Y')
+                            JOIN MCPKG MP ON (MP.MCPKG_ID = CS.MCPKG_ID)
+                        WHERE     MP.COMMPKG_ID = CP.COMMPKG_ID
+                            AND C.CERTIFICATETYPE IN ('RFCC', 'RFSC')
+                            AND C.ISVOIDED = 'N')
+                        AS ""{s_mcPkgsRejectedByCommissioning}"",
+                    (SELECT COUNT (MP.MCPKG_ID)
+                        FROM V$CERTIFICATE C
+                            JOIN CERTIFICATESCOPE CS
+                                ON (CS.CERTIFICATE_ID = C.CERTIFICATE_ID AND REJECTED = 'N')
+                            JOIN MCPKG MP ON (MP.MCPKG_ID = CS.MCPKG_ID)
+                        WHERE     MP.COMMPKG_ID = CP.COMMPKG_ID
+                            AND C.CERTIFICATETYPE IN ('RFOC', 'RFSC')
+                            AND C.ISVOIDED = 'N'
+                            AND C.ISSENT = 'Y'
+                            AND C.ISREJECTED = 'N')
+                        AS ""{s_mcPkgsSentToOperation}"",
+                    (SELECT COUNT (MP.MCPKG_ID)
+                        FROM V$CERTIFICATE C
+                            JOIN CERTIFICATESCOPE CS
+                                ON (CS.CERTIFICATE_ID = C.CERTIFICATE_ID AND REJECTED = 'N')
+                            JOIN MCPKG MP ON (MP.MCPKG_ID = CS.MCPKG_ID)
+                        WHERE     MP.COMMPKG_ID = CP.COMMPKG_ID
+                            AND C.CERTIFICATETYPE IN ('RFOC', 'RFSC')
+                            AND C.ISVOIDED = 'N'
+                            AND C.ISACCEPTED = 'Y')
+                        AS ""{s_mcPkgsAcceptedByOperation}"",
+                    (SELECT COUNT (DISTINCT MP.MCPKG_ID)
+                        FROM V$CERTIFICATE C
+                            JOIN CERTIFICATESCOPE CS
+                                ON (CS.CERTIFICATE_ID = C.CERTIFICATE_ID AND REJECTED = 'Y')
+                            JOIN MCPKG MP ON (MP.MCPKG_ID = CS.MCPKG_ID)
+                        WHERE     MP.COMMPKG_ID = CP.COMMPKG_ID
+                            AND C.CERTIFICATETYPE IN ('RFOC', 'RFSC')
+                            AND C.ISVOIDED = 'N')
+                        AS ""{s_mcPkgsRejectedByOperation}""
+                FROM COMMPKG CP
+                WHERE CP.COMMPKG_ID IN ({s_commPkgIdsToken})";
         public TagRepository(
             IConfiguration configuration,
             ILogger<TagRepository> logger)
@@ -150,21 +253,56 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
 
         public TagModel GetPage(string installationCode, int currentPage, int itemsPerPage, int takeMax = 0)
         {
-            var (tags, timeUsed) = GetTagPropertiesInstances(installationCode, currentPage, itemsPerPage);
-            _logger.LogInformation($"Got {tags.Count()} records for 3D Ecosystems, page {currentPage}, pagesize {itemsPerPage} during {FormatTimeSpan(timeUsed)}");
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+            var msgPrefix = $"3D Ecosystems for code '{installationCode}':";
+            _logger.LogInformation($"{msgPrefix} Getting {itemsPerPage} tags at page {currentPage}");
+            var (tags, timeUsedGettingTags) = GetTags(installationCode, currentPage, itemsPerPage);
+            _logger.LogInformation($"{msgPrefix} Got {tags.Count()} tags during {FormatTimeSpan(timeUsedGettingTags)}");
 
-            return new TagModel
+            var uniqueCommPkgIds = tags.Where(t => t.CommPkgId.HasValue).Select(t => t.CommPkgId.Value).Distinct();
+
+            _logger.LogInformation($"{msgPrefix} Getting CommPkg info for {uniqueCommPkgIds.Count()} CommPkgs");
+            var (commPkgs, timeUsedGettingCommPkgs) = GetCommPkgs(uniqueCommPkgIds);
+            _logger.LogInformation($"{msgPrefix} Got {commPkgs.Count()} commPkgs during {FormatTimeSpan(timeUsedGettingCommPkgs)}");
+
+            FillTagsWithHandoverInfo(tags, commPkgs);
+
+            var tagProperties = GeTagPropertiesInstances(tags);
+
+            var tagModel = new TagModel
             {
-                TimeUsed = FormatTimeSpan(timeUsed),
+                TimeUsedGettingTags = FormatTimeSpan(timeUsedGettingTags),
+                TimeUsedGettingCommPkgs = FormatTimeSpan(timeUsedGettingCommPkgs),
+                TimeUsedGettingTotal = FormatTimeSpan(stopWatch.Elapsed),
                 Heading = GetTagPropertiesHeading(),
-                Tags = takeMax > 0 ? tags.Take(takeMax) : tags,
+                Tags = takeMax > 0 ? tagProperties.Take(takeMax) : tagProperties,
                 Count = tags.Count()
             };
+
+            stopWatch.Stop();
+            _logger.LogInformation($"{msgPrefix} Finished during {tagModel.TimeUsedGettingTotal}");
+
+            return tagModel;
+        }
+
+        private void FillTagsWithHandoverInfo(IList<Tag> tags, IList<CommPkg> commPkgs)
+        {
+            foreach (var commPkg in commPkgs)
+            {
+                tags.Where(t => t.CommPkgId.HasValue && t.CommPkgId.Value == commPkg.CommPkgId)
+                    .ToList()
+                    .ForEach(t =>
+                {
+                    t.Rfcc = commPkg.RFCCHandoverStatus;
+                    t.Rfoc = commPkg.RFOCHandoverStatus;
+                });
+            }
         }
 
         private string FormatTimeSpan(TimeSpan ts) => $"{ts.Hours:00}h {ts.Minutes:00}m {ts.Seconds:00}s";
         
-        private IEnumerable<string> GetTagPropertiesHeading()
+        private IList<string> GetTagPropertiesHeading()
             => new List<string>
             {
                 s_tagNo,
@@ -183,32 +321,50 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
                 s_commPkg_Id
             };
 
-        private static IEnumerable<IEnumerable<object>> GeTagPropertiesInstances(DataTable dataTable)
+        private static IEnumerable<IEnumerable<object>> GeTagPropertiesInstances(IList<Tag> tags)
         {
-            var instances = (from DataRow row in dataTable.Rows
-                select new List<object>
+            var tagProperties = tags.Select(t => new List<object>
             {
-                    row[s_tagNo] as string,
-                    row[s_project] as string,
-                    Convert.ToInt32(row[s_punchCount]),
-                    row[s_commPkgNo] as string,
-                    row[s_commPkgDesc] as string,
-                    row[s_mcPkgNo] as string,
-                    row[s_mcPkgDesc] as string,
-                    row[s_priority] as string,
-                    row[s_phase] as string,
-                    row[s_rfcc] as string,
-                    row[s_rfoc] as string,
-                    row[s_responsible] as string,
-                    row[s_status] as string,
-                    row[s_commPkg_Id] == DBNull.Value
-                        ? null : Convert.ToInt32(row[s_commPkg_Id]),
-                }
-                ).ToList();
-            return instances;
+                t.TagNo,
+                    t.Project,
+                    t.PunchCount,
+                    t.CommPkgNo,
+                    t.CommPkgDesc,
+                    t.McPkgNo,
+                    t.McPkgDesc,
+                    t.Priority,
+                    t.Phase,
+                    t.Rfcc,
+                    t.Rfoc,
+                    t.Responsible,
+                    t.Status
+                });
+            return tagProperties;
         }
 
-        private (IEnumerable<IEnumerable<object>>, TimeSpan) GetTagPropertiesInstances(string installationCode, int currentPage, int itemsPerPage)
+        private static IList<Tag> CreateTagInstances(DataTable dataTable)
+        {
+            var tags = (from DataRow row in dataTable.Rows
+                             select new Tag
+            {
+                    TagNo = row[s_tagNo] as string,
+                    Project = row[s_project] as string,
+                    PunchCount = Convert.ToInt32(row[s_punchCount]),
+                    CommPkgNo = row[s_commPkgNo] as string,
+                    CommPkgDesc = row[s_commPkgDesc] as string,
+                    McPkgNo = row[s_mcPkgNo] as string,
+                    McPkgDesc = row[s_mcPkgDesc] as string,
+                    Priority = row[s_priority] as string,
+                    Phase = row[s_phase] as string,
+                    Responsible = row[s_responsible] as string,
+                    Status = row[s_status] as string,
+                    CommPkgId = row[s_commPkg_Id] == DBNull.Value ? null : Convert.ToInt32(row[s_commPkg_Id]),
+                }
+                ).ToList();
+            return tags;
+        }
+
+        private (IList<Tag>, TimeSpan) GetTags(string installationCode, int currentPage, int itemsPerPage)
         {
             DataTable result = null;
 
@@ -216,7 +372,6 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
             try
             {
                 var strSql = s_tagQuery.Replace(s_instCodeToken, installationCode);
-                var message = $"Getting {itemsPerPage} records at page {currentPage} for 3D Ecosystems for installation code {installationCode}";
                 strSql += 
                     $@"
                         ORDER BY TAG_ID,
@@ -224,21 +379,76 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
                         COMMPKG_ID,
                         RESPONSIBLE_ID
                     OFFSET {currentPage * itemsPerPage} ROWS FETCH NEXT {itemsPerPage} ROWS ONLY";
-                _logger.LogInformation(message);
                 
                 var stopWatch = new Stopwatch();
                 stopWatch.Start();
                 result = oracleDatabase.QueryDataTable(strSql);
-                var instances = GeTagPropertiesInstances(result);
+                var tags = CreateTagInstances(result);
                 stopWatch.Stop();
                 
-                return (instances, stopWatch.Elapsed);
+                return (tags, stopWatch.Elapsed);
             }
             finally
             {
                 result?.Dispose();
                 oracleDatabase.Close();
             }
+        }
+
+        private (IList<CommPkg>, TimeSpan) GetCommPkgs(IEnumerable<int> ids)
+        {
+            DataTable result = null;
+            const int maxToGetFromOracle = 1000;
+            var oracleDatabase = new OracleDb(_connectionString);
+            try
+            {
+                var commPkgs = new List<CommPkg>();
+
+                var stopWatch = new Stopwatch();
+                stopWatch.Start();
+
+                var pageSize = maxToGetFromOracle;
+                var pageCounter = 0;
+                var pageItems = ids.Take(pageSize).ToList();
+                while (pageItems.Count() > 0)
+                {
+                    var commPkgIdList = string.Join(",", pageItems);
+                    var strSql = s_commPkgQuery.Replace(s_commPkgIdsToken, commPkgIdList);
+
+                    result = oracleDatabase.QueryDataTable(strSql);
+                    commPkgs.AddRange(CreateCommPkgsFromResult(result));
+
+                    pageCounter++;
+                    pageItems = ids.Skip(pageSize * pageCounter).Take(pageSize).ToList();
+                }
+
+                stopWatch.Stop();
+                return (commPkgs, stopWatch.Elapsed);
+            }
+            finally
+            {
+                result?.Dispose();
+                oracleDatabase.Close();
+            }
+        }
+
+        private IList<CommPkg> CreateCommPkgsFromResult(DataTable dataTable)
+        {
+            var instances =
+                (from DataRow row in dataTable.Rows
+                 select new CommPkg
+                 {
+                     CommPkgId = Convert.ToInt32(row[s_commPkg_Id]),
+                     McPkgCount = Convert.ToInt32(row[s_mcPkgCount]),
+                     McPkgsSentToCommissioning = Convert.ToInt32(row[s_mcPkgCount]),
+                     McPkgsAcceptedByCommissioning = Convert.ToInt32(row[s_mcPkgsSentToCommissioning]),
+                     McPkgsRejectedByCommissioning = Convert.ToInt32(row[s_mcPkgsRejectedByCommissioning]),
+                     McPkgsSentToOperation = Convert.ToInt32(row[s_mcPkgsSentToOperation]),
+                     McPkgsAcceptedByOperation = Convert.ToInt32(row[s_mcPkgsAcceptedByOperation]),
+                     McPkgsRejectedByOperation = Convert.ToInt32(row[s_mcPkgsRejectedByOperation])
+                 }
+                ).ToList();
+            return instances;
         }
     }
 }
