@@ -256,6 +256,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
             var stopWatch = new Stopwatch();
             stopWatch.Start();
             var msgPrefix = $"3D Ecosystems for code '{installationCode}':";
+
             _logger.LogInformation($"{msgPrefix} Getting {itemsPerPage} tags at page {currentPage}");
             var (tags, timeUsedGettingTags) = GetTags(installationCode, currentPage, itemsPerPage);
             _logger.LogInformation($"{msgPrefix} Got {tags.Count()} tags during {FormatTimeSpan(timeUsedGettingTags)}");

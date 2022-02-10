@@ -2,7 +2,6 @@ trigger:
   branches:
     include:
       - master
-      - 88816/*
 
 name: $(date:yyyyMMdd)$(rev:.r)
 
@@ -71,7 +70,7 @@ stages:
 - stage: deploy_test
   displayName: 'Deploy to Test'
   dependsOn: 'build'
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
   variables:
     serviceConnection: '${{variables.nonProdServiceConnection}}'
     envName: 'test'
@@ -103,7 +102,7 @@ stages:
 - stage: runtest_test
   displayName: 'Run tests (Test env.)'
   dependsOn: 'deploy_test'
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
   variables:
     envName: 'test'
     envGroup: '$(globalPrefix)-$(fullAppName)-${{ variables.envName }}'  
