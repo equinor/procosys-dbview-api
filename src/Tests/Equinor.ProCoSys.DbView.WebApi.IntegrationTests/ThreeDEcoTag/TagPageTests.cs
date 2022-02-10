@@ -43,7 +43,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
                 getNextPage = nextPage.Tags.Count() == itemsPerPage;
             }
 
-            // total number of tags from from HOLO$COMMPKG_TAG view in Johan Sverdrup pr Feb 2022 was 414092
+            // total number of tags for JSV pr Feb 2022 was 474514
             Assert.IsTrue(page >= 3);
         }
 
@@ -184,7 +184,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
             var count = model.Tags.Count();
 
             Console.WriteLine($"{message} ({DateTime.Now})");
-            Console.WriteLine($"Time used for fetch {count} records from HOLO$COMMPKG_TAG: {model.TimeUsed}");
+            Console.WriteLine($"Time used for fetch {count} Tag records: {model.TimeUsed}");
             var timeUsed = $"{timeUsedTotal.Hours:00}h {timeUsedTotal.Minutes:00}m {timeUsedTotal.Seconds:00}s";
             Console.WriteLine($"Time used total incl networking: {timeUsed}");
             Console.Write("Heading: ");
