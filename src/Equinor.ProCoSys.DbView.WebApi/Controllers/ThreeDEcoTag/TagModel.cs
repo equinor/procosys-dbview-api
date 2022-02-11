@@ -9,7 +9,9 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
         /// Information about time used to querying records from database
         /// </summary>
         [Required]
-        public string TimeUsed { get; set; }
+        public string TimeUsedGettingTags { get; set; }
+        public string TimeUsedGettingCommPkgs { get; set; }
+        public string TimeUsedTotal { get; set; }
 
         /// <summary>
         /// Number of records returned
@@ -22,7 +24,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
         /// </summary>
         [Required]
         public IEnumerable<string> Heading { get; set; }
-        
+
         /// <summary>
         /// List of tags
         /// </summary>
