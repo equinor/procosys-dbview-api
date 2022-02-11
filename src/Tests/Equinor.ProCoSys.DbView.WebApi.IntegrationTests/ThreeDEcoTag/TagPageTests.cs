@@ -15,22 +15,40 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
         [TestCategory("All")]
         [TestMethod]
         public async Task A1_GetTagPage_ShouldReturnUnauthorizedIfNotAuthenticated()
-            => await TagTestsHelper.GetTagPage(NotAuthenticatedRestClient, Config.InstCodeUnderTest, 0, 10, HttpStatusCode.Unauthorized);
+            => await TagTestsHelper.GetTagPage(NotAuthenticatedRestClient, Config.InstCodeUnderTest_Large, 0, 10, HttpStatusCode.Unauthorized);
         
         [TestCategory("All")]
         [TestMethod]
         public async Task A2_GetTagPage_ShouldReturnForbiddenIfNoAccess()
-            => await TagTestsHelper.GetTagPage(ClientWithoutAnyRoles, Config.InstCodeUnderTest, 0, 10, HttpStatusCode.Forbidden);
+            => await TagTestsHelper.GetTagPage(ClientWithoutAnyRoles, Config.InstCodeUnderTest_Large, 0, 10, HttpStatusCode.Forbidden);
 
         [TestCategory("All")]
         [TestMethod]
-        public async Task B1_GetTagPage_ShouldGetAllTagPages()
+        public async Task B_GetTagPage_ShouldGetCorrectTagData()
+        {
+            const int itemsPerPage = 500;
+            TimeSpan timeUsed;
+            TagModel page0;
+            var instCode = Config.InstCodeUnderTest_Details;
+
+            (page0, timeUsed) = await GetPageUsingClientWithAccessAsync(instCode, 0, itemsPerPage);
+            ShowModel("Page 0", page0, timeUsed);
+            AssertModel(page0, itemsPerPage, false);
+
+            Assert.IsTrue(itemsPerPage > page0.Tags.Count());
+
+            AssertKnownDetails(page0);
+        }
+
+        [TestCategory("All")]
+        [TestMethod]
+        public async Task C1_GetTagPage_ShouldGetAllTagPages()
         {
             const int itemsPerPage = 100000;
             var getNextPage = true;
             var page = 0;
 
-            var instCode = Config.InstCodeUnderTest;
+            var instCode = Config.InstCodeUnderTest_Large;
 
             while (getNextPage)
             {
@@ -49,13 +67,13 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
 
         [TestCategory("All")]
         [TestMethod]
-        public async Task B2_GetTagPage_ShouldGetDifferentTagPages()
+        public async Task C2_GetTagPage_ShouldGetDifferentTagPages()
         {
             const int itemsPerPage = 50000;
             TimeSpan timeUsed;
             TagModel prevPage;
 
-            (prevPage, timeUsed) = await GetPageUsingClientWithAccessAsync(Config.InstCodeUnderTest, 0, itemsPerPage);
+            (prevPage, timeUsed) = await GetPageUsingClientWithAccessAsync(Config.InstCodeUnderTest_Large, 0, itemsPerPage);
             ShowModel("Page 0", prevPage, timeUsed);
             AssertModel(prevPage, itemsPerPage);
             
@@ -63,7 +81,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
             foreach (var page in pages)
             {
                 TagModel nextPage;
-                (nextPage, timeUsed) = await GetPageUsingClientWithAccessAsync(Config.InstCodeUnderTest, page, itemsPerPage);
+                (nextPage, timeUsed) = await GetPageUsingClientWithAccessAsync(Config.InstCodeUnderTest_Large, page, itemsPerPage);
                 ShowModel($"Page {page}", nextPage, timeUsed);
                 AssertModel(nextPage, itemsPerPage);
 
@@ -81,7 +99,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
             const int itemsPerPage = 10000;
             TimeSpan timeUsed;
             TagModel prevPage;
-            var instCode = Config.InstCodeUnderTest;
+            var instCode = Config.InstCodeUnderTest_Large;
 
             (prevPage, timeUsed) = await GetPageUsingClientWithAccessAsync(instCode, 0, itemsPerPage);
             ShowModel("Page 0", prevPage, timeUsed);
@@ -131,12 +149,10 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
 
         private static void AssertEqualPages(TagModel prevPage, TagModel nextPage)
         {
-            var tagNoIdx = GetAndVerifyColumnIdx(prevPage.Heading, 0, "TagNo");
-            var projectIdx = GetAndVerifyColumnIdx(prevPage.Heading, 1, "Project");
-            var commPkgNoIdx = GetAndVerifyColumnIdx(prevPage.Heading, 3, "CommPkgNo");
-            var responsibleIdx = GetAndVerifyColumnIdx(prevPage.Heading, 11, "Responsible");
-            var tagsPrevPage = prevPage.Tags.Select(tagData => GetUniqeKeyForTag(tagData, tagNoIdx, projectIdx, commPkgNoIdx, responsibleIdx)).Distinct().ToList();
-            var tagsNextPage = nextPage.Tags.Select(tagData => GetUniqeKeyForTag(tagData, tagNoIdx, projectIdx, commPkgNoIdx, responsibleIdx)).Distinct().ToList();
+            var helper = new DetailsHelper(prevPage);
+
+            var tagsPrevPage = prevPage.Tags.Select(tagData => helper.GetUniqeKeyForTag(tagData)).Distinct().ToList();
+            var tagsNextPage = nextPage.Tags.Select(tagData => helper.GetUniqeKeyForTag(tagData)).Distinct().ToList();
 
             // all items on prev and next page be equal => 
             Assert.AreEqual(tagsPrevPage.Count, tagsNextPage.Count);
@@ -146,24 +162,11 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
             }
         }
 
-        private static string GetUniqeKeyForTag(IEnumerable<object> tagData, int tagNoIdx, int projectIdx, int commPkgNoIdx, int responsibleIdx)
-            => $"{tagData.ElementAt(tagNoIdx)}_{tagData.ElementAt(projectIdx)}_{tagData.ElementAt(commPkgNoIdx)}_{tagData.ElementAt(responsibleIdx)}";
-
-        private static int GetAndVerifyColumnIdx(IEnumerable<string> heading, int colIdx, string colName)
-        {
-            var col = heading.ElementAt(colIdx);
-            Assert.AreEqual(colName, col);
-            return colIdx;
-        }
-
         private static void AssertDifferentPages(TagModel prevPage, TagModel nextPage)
         {
-            var tagNoIdx = GetAndVerifyColumnIdx(prevPage.Heading, 0, "TagNo");
-            var projectIdx = GetAndVerifyColumnIdx(prevPage.Heading, 1, "Project");
-            var commPkgNoIdx = GetAndVerifyColumnIdx(prevPage.Heading, 3, "CommPkgNo");
-            var responsibleIdx = GetAndVerifyColumnIdx(prevPage.Heading, 11, "Responsible");
-            var tagsPrevPage = prevPage.Tags.Select(tagData => GetUniqeKeyForTag(tagData, tagNoIdx, projectIdx, commPkgNoIdx, responsibleIdx)).Distinct().ToList();
-            var tagsNextPage = nextPage.Tags.Select(tagData => GetUniqeKeyForTag(tagData, tagNoIdx, projectIdx, commPkgNoIdx, responsibleIdx)).Distinct().ToList();
+            var helper = new DetailsHelper(prevPage);
+            var tagsPrevPage = prevPage.Tags.Select(tagData => helper.GetUniqeKeyForTag(tagData)).Distinct().ToList();
+            var tagsNextPage = nextPage.Tags.Select(tagData => helper.GetUniqeKeyForTag(tagData)).Distinct().ToList();
             var allDistinctTags = tagsPrevPage.Concat(tagsNextPage).Distinct();
 
             Assert.AreEqual(tagsPrevPage.Count + tagsNextPage.Count, allDistinctTags.Count());
@@ -194,14 +197,136 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
             }
             Console.WriteLine("");
 
-            var tagNoIdx = GetAndVerifyColumnIdx(model.Heading, 0, "TagNo");
-            var projectIdx = GetAndVerifyColumnIdx(model.Heading, 1, "Project");
-            var commPkgNoIdx = GetAndVerifyColumnIdx(model.Heading, 3, "CommPkgNo");
-            var responsibleIdx = GetAndVerifyColumnIdx(model.Heading, 11, "Responsible");
+            var helper = new DetailsHelper(model);
             if (count > 0)
             {
-                Console.WriteLine($"First tag {GetUniqeKeyForTag(model.Tags.First(), tagNoIdx, projectIdx, commPkgNoIdx, responsibleIdx)}");
+                Console.WriteLine($"First tag {helper.GetUniqeKeyForTag(model.Tags.First())}");
             }
+        }
+
+        private void AssertKnownDetails(TagModel model)
+        {
+            var helper = new DetailsHelper(model);
+
+            AssertTagDetails(
+                model,
+                helper,
+                "82EN650A-J87",
+                "M.TST01.XX.0001",
+                "9801-A01",
+                "AATSTF",
+                "9801-J005",
+                "Not sent",
+                "Not sent");
+
+            AssertTagDetails(
+                model,
+                helper,
+                "98EU601",
+                "M.TST01.XX.0001",
+                "9801-A02",
+                "AATSTF",
+                "9801-M001",
+                "Sent",
+                "Not sent");
+
+            AssertTagDetails(
+                model,
+                helper,
+                "98EU601-B01",
+                "M.TST01.XX.0001",
+                "9801-A03",
+                "AATSTF",
+                "9801-E008",
+                "Rejected",
+                "Not sent");
+
+            AssertTagDetails(
+                model,
+                helper,
+                "82EN650B-J91",
+                "M.TST01.XX.0001",
+                "9801-A04",
+                "AATSTF",
+                "9801-J006",
+                "Fully accepted",
+                "Not sent");
+
+            AssertTagDetails(
+                model,
+                helper,
+                "98EU602",
+                "M.TST01.XX.0001",
+                "9801-A05",
+                "AATSTF",
+                "9801-M002",
+                "Partly accepted",
+                "Not sent");
+
+            AssertTagDetails(
+                model,
+                helper,
+                "98EU603",
+                "M.TST01.XX.0001",
+                "9801-A06",
+                "AATSTF",
+                "9801-M003",
+                "Fully accepted",
+                "Sent");
+
+            AssertTagDetails(
+                model,
+                helper,
+                "98EU602-B01",
+                "M.TST01.XX.0001",
+                "9801-A07",
+                "AATSTF",
+                "9801-E009",
+                "Fully accepted",
+                "Rejected");
+
+            AssertTagDetails(
+                model,
+                helper,
+                "98EU603-B01",
+                "M.TST01.XX.0001",
+                "9801-A09",
+                "AATSTF",
+                "9801-E010",
+                "Fully accepted",
+                "Fully accepted");
+
+            AssertTagDetails(
+                model,
+                helper,
+                "98EU604",
+                "M.TST01.XX.0001",
+                "9801-A10",
+                "AATSTF",
+                "9801-M004",
+                "Partly accepted",
+                "Partly accepted");
+        }
+
+        private void AssertTagDetails(
+            TagModel model,
+            DetailsHelper helper,
+            string tagNo,
+            string project,
+            string commPkgNo, 
+            string responsible,
+            string mcPkgNo,
+            string rfcc, 
+            string rfoc)
+        {
+            var props = model
+                .Tags
+                .Where(tagData =>
+                helper.GetUniqeKeyForTag(tagData) == $"{tagNo}_{project}_{commPkgNo}_{responsible}")
+                .Single();
+            Assert.AreEqual(mcPkgNo, props.ElementAt(helper.McPkgNoIdx));
+            Assert.AreEqual(rfcc, props.ElementAt(helper.RfccIdx));
+            Assert.AreEqual(rfoc, props.ElementAt(helper.RfocIdx));
         }
 
         private static void AssertModel(TagModel model, int itemsPerPage, bool assertCount = true)
@@ -211,11 +336,8 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
             Assert.IsNotNull(model.Heading.SingleOrDefault(h => h == "TagNo"));
             Assert.IsNotNull(model.Tags);
 
-            var tagNoIdx = GetAndVerifyColumnIdx(model.Heading, 0, "TagNo");
-            var projectIdx = GetAndVerifyColumnIdx(model.Heading, 1, "Project");
-            var commPkgNoIdx = GetAndVerifyColumnIdx(model.Heading, 3, "CommPkgNo");
-            var responsibleIdx = GetAndVerifyColumnIdx(model.Heading, 11, "Responsible");
-            var allTags = model.Tags.Select(tagData => GetUniqeKeyForTag(tagData, tagNoIdx, projectIdx, commPkgNoIdx, responsibleIdx)).Distinct().ToList();
+            var helper = new DetailsHelper(model);
+            var allTags = model.Tags.Select(tagData => helper.GetUniqeKeyForTag(tagData)).Distinct().ToList();
             var distinctTags = allTags.Distinct().ToList();
             if (allTags.Count != distinctTags.Count)
             {
