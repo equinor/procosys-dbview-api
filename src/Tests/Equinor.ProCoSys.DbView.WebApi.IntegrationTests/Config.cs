@@ -38,7 +38,9 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests
         public static string WebApiScope => Instance._config["WebApiScope"];
         public static string ApplicationUrl => Instance._config["ApplicationUrl"];
         
-        public static string InstCodeUnderTest => Instance._config["InstCodeUnderTest"];
+        public static string InstCodeUnderTest_Large => Instance._config["InstCodeUnderTest_Large"];
+        public static string InstCodeUnderTest_Details => Instance._config["InstCodeUnderTest_Details"];
+
         public static string RandomInstCodeUnderTest
         {
             get
