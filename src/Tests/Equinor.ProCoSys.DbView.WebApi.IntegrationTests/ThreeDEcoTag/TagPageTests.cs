@@ -22,7 +22,9 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
         public async Task A2_GetTagPage_ShouldReturnForbiddenIfNoAccess()
             => await TagTestsHelper.GetTagPage(ClientWithoutAnyRoles, Config.InstCodeUnderTest_Large, 0, 10, HttpStatusCode.Forbidden);
 
-        [TestCategory("All")]
+        [TestCategory("Local")]
+        [TestCategory("Prod")]
+        // Dont run in test yet. Correct data misses there
         [TestMethod]
         public async Task B_GetTagPage_ShouldGetCorrectTagData()
         {
@@ -319,11 +321,13 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
             string rfcc, 
             string rfoc)
         {
+            var tagDataToFind = $"{tagNo}_{project}_{commPkgNo}_{responsible}";
             var props = model
                 .Tags
                 .Where(tagData =>
-                helper.GetUniqeKeyForTag(tagData) == $"{tagNo}_{project}_{commPkgNo}_{responsible}")
-                .Single();
+                helper.GetUniqeKeyForTag(tagData) == tagDataToFind)
+                .SingleOrDefault();
+            Assert.IsNotNull(props, $"Didn't find expected {tagDataToFind}");
             Assert.AreEqual(mcPkgNo, props.ElementAt(helper.McPkgNoIdx));
             Assert.AreEqual(rfcc, props.ElementAt(helper.RfccIdx));
             Assert.AreEqual(rfoc, props.ElementAt(helper.RfocIdx));
