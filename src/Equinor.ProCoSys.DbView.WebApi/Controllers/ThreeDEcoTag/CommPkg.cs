@@ -19,10 +19,10 @@
         
         internal int McPkgsSentToCommissioning { get; set; }
         internal int McPkgsRejectedByCommissioning { get; set; }
-        internal int McPkgsSentToOperation { get; set; }
-        
-        internal int McPkgsRejectedByOperation { get; set; }
         internal int McPkgsAcceptedByCommissioning { get; set; }
+
+        internal int McPkgsSentToOperation { get; set; }
+        internal int McPkgsRejectedByOperation { get; set; }
         internal int McPkgsAcceptedByOperation { get; set; }
 
         private string CertificateStatus(int sentCount, int acceptedCount, int rejectedCount)

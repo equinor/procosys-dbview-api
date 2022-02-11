@@ -239,6 +239,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
                         AS ""{s_mcPkgsRejectedByOperation}""
                 FROM COMMPKG CP
                 WHERE CP.COMMPKG_ID IN ({s_commPkgIdsToken})";
+        
         public TagRepository(
             IConfiguration configuration,
             ILogger<TagRepository> logger)
@@ -436,8 +437,8 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
                  {
                      CommPkgId = Convert.ToInt32(row[s_commPkg_Id]),
                      McPkgCount = Convert.ToInt32(row[s_mcPkgCount]),
-                     McPkgsSentToCommissioning = Convert.ToInt32(row[s_mcPkgCount]),
-                     McPkgsAcceptedByCommissioning = Convert.ToInt32(row[s_mcPkgsSentToCommissioning]),
+                     McPkgsSentToCommissioning = Convert.ToInt32(row[s_mcPkgsSentToCommissioning]),
+                     McPkgsAcceptedByCommissioning = Convert.ToInt32(row[s_mcPkgsAcceptedByCommissioning]),
                      McPkgsRejectedByCommissioning = Convert.ToInt32(row[s_mcPkgsRejectedByCommissioning]),
                      McPkgsSentToOperation = Convert.ToInt32(row[s_mcPkgsSentToOperation]),
                      McPkgsAcceptedByOperation = Convert.ToInt32(row[s_mcPkgsAcceptedByOperation]),
