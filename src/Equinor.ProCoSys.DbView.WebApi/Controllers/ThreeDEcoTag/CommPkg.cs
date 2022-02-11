@@ -31,7 +31,7 @@
             {
                 return "Rejected";
             }
-            if (McPkgCount > 0 && acceptedCount < McPkgCount)
+            if (McPkgCount > 0 && acceptedCount > 0 && acceptedCount < McPkgCount)
             {
                 return "Partly accepted";
             }
