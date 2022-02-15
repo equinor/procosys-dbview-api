@@ -15,6 +15,7 @@
         public string Rfoc { get; set; }
         public string Responsible { get; set; }
         public string Status { get; set; }
+        public string FormularType { get; set; }
         public int? CommPkgId { get; set; }
     }
 }

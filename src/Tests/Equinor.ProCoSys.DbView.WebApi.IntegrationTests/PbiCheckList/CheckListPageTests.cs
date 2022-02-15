@@ -204,7 +204,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.PbiCheckList
             Console.WriteLine($"{message} ({DateTime.Now})");
             Console.WriteLine($"Time used for fetch {count} records from PBI$CHECKLIST: {model.TimeUsed}");
             var timeUsed = $"{timeUsedTotal.Hours:00}h {timeUsedTotal.Minutes:00}m {timeUsedTotal.Seconds:00}s";
-            Console.WriteLine($"Time used total incl networking: {timeUsed}");
+            Console.WriteLine($"Time used from client side: {timeUsed}");
             if (count > 0)
             {
                 Console.WriteLine($"First id {model.CheckLists.First().CheckList_Id}");

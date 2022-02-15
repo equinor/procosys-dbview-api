@@ -28,6 +28,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
         private static readonly string s_rfoc = "RFOC";
         private static readonly string s_responsible = "Responsible";
         private static readonly string s_status = "Status";
+        private static readonly string s_formularType = "FormularType";
 
         private static readonly string s_instCodeToken = "[INSTCODE]";
 
@@ -52,7 +53,8 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
                      WHERE     PI.TAGCHECK_ID = TC.TAGCHECK_ID
                            AND pi.isvoided = 'N'
                            AND((PI.CLEAREDAT IS NULL) OR(PI.REJECTEDAT IS NOT NULL)))
-                      AS ""{s_punchCount}""
+                      AS ""{s_punchCount}"",
+                   FT.FORMULARTYPE  AS ""{s_formularType}""
               FROM procosys.tag t
                    INNER JOIN procosys.project pr
                       ON pr.PROJECT_ID = t.project_id
@@ -79,6 +81,8 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
                    LEFT OUTER JOIN PROCOSYS.TAGFORMULARTYPE TFT ON TFT.TAG_ID = T.TAG_ID
                    LEFT OUTER JOIN PROCOSYS.TAGCHECK TC
                       ON TC.TAGFORMULARTYPE_ID = TFT.TAGFORMULARTYPE_ID
+                   LEFT OUTER JOIN FORMULARTYPE FT
+                      ON FT.FORMULARTYPE_ID = TFT.FORMULARTYPE_ID
                    LEFT OUTER JOIN procosys.responsible res
                       ON RES.RESPONSIBLE_ID = TC.RESPONSIBLE_ID
                    LEFT OUTER JOIN procosys.library pri
@@ -108,7 +112,8 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
                      WHERE     PI.TAGCHECK_ID = TC.TAGCHECK_ID
                            AND pi.isvoided = 'N'
                            AND ((PI.CLEAREDAT IS NULL) OR (PI.REJECTEDAT IS NOT NULL)))
-                      AS ""{s_punchCount}""
+                      AS ""{s_punchCount}"",
+                   FT.FORMULARTYPE  AS ""{s_formularType}""
               FROM procosys.tag t
                    INNER JOIN procosys.project pr
                       ON pr.PROJECT_ID = t.project_id
@@ -125,6 +130,10 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
                       ON pt.PIPINGREVISION_ID = PR.PIPINGREVISION_ID
                    LEFT OUTER JOIN PROCOSYS.TAGCHECK TC
                       ON TC.TAGCHECK_ID = pt.TAGCHECK_ID
+                   LEFT OUTER JOIN TagFormularType tft
+                      ON (tft.tagFormularType_Id = tc.tagFormularType_Id)
+                   LEFT OUTER JOIN FormularType ft
+                      ON ft.formularType_Id = tft.formularType_Id
                    LEFT OUTER JOIN procosys.mcpkg mc ON MC.MCPKG_ID = pr.mcpkg_id
                    LEFT OUTER JOIN procosys.commpkg c ON C.COMMPKG_ID = mc.commpkg_id
                    LEFT OUTER JOIN procosys.responsible res
@@ -315,7 +324,8 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
                 s_rfcc,
                 s_rfoc,
                 s_responsible,
-                s_status
+                s_status,
+                s_formularType
             };
 
         private static IEnumerable<IEnumerable<object>> GeTagPropertiesInstances(IList<Tag> tags)
@@ -334,7 +344,8 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
                     t.Rfcc,
                     t.Rfoc,
                     t.Responsible,
-                    t.Status
+                    t.Status,
+                    t.FormularType
                 });
             return tagProperties;
         }
@@ -355,6 +366,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
                     Phase = row[s_phase] as string,
                     Responsible = row[s_responsible] as string,
                     Status = row[s_status] as string,
+                    FormularType = row[s_formularType] as string,
                     CommPkgId = row[s_commPkg_Id] == DBNull.Value ? null : Convert.ToInt32(row[s_commPkg_Id]),
                 }
                 ).ToList();
