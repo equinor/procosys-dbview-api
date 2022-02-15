@@ -189,9 +189,9 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
             var count = model.Tags.Count();
 
             Console.WriteLine($"{message} ({DateTime.Now})");
-            Console.WriteLine($"Time used for fetch {count} Tag records: {model.TimeUsed}");
+            Console.WriteLine($"Time used for fetch {count} Tag records: Tags: {model.TimeUsedGettingTags}. CommPkgs: {model.TimeUsedGettingCommPkgs}. Total: {model.TimeUsedTotal}. ");
             var timeUsed = $"{timeUsedTotal.Hours:00}h {timeUsedTotal.Minutes:00}m {timeUsedTotal.Seconds:00}s";
-            Console.WriteLine($"Time used total incl networking: {timeUsed}");
+            Console.WriteLine($"Time used from client side: {timeUsed}");
             Console.Write("Heading: ");
             foreach (var head in model.Heading)
             {
