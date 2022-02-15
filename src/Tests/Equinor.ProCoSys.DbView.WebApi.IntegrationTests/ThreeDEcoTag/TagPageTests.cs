@@ -31,7 +31,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
             const int itemsPerPage = 500;
             TimeSpan timeUsed;
             TagModel page0;
-            var instCode = Config.InstCodeUnderTest_Details;
+            var instCode = Config.InstCodeUnderTest_Static;
 
             (page0, timeUsed) = await GetPageUsingClientWithAccessAsync(instCode, 0, itemsPerPage);
             ShowModel("Page 0", page0, timeUsed);
@@ -71,11 +71,12 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
         [TestMethod]
         public async Task C2_GetTagPage_ShouldGetDifferentTagPages()
         {
-            const int itemsPerPage = 50000;
+            const int itemsPerPage = 10;
             TimeSpan timeUsed;
             TagModel prevPage;
+            var instCode = Config.InstCodeUnderTest_Static;
 
-            (prevPage, timeUsed) = await GetPageUsingClientWithAccessAsync(Config.InstCodeUnderTest_Large, 0, itemsPerPage);
+            (prevPage, timeUsed) = await GetPageUsingClientWithAccessAsync(instCode, 0, itemsPerPage);
             ShowModel("Page 0", prevPage, timeUsed);
             AssertModel(prevPage, itemsPerPage);
             
@@ -83,10 +84,11 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
             foreach (var page in pages)
             {
                 TagModel nextPage;
-                (nextPage, timeUsed) = await GetPageUsingClientWithAccessAsync(Config.InstCodeUnderTest_Large, page, itemsPerPage);
+                (nextPage, timeUsed) = await GetPageUsingClientWithAccessAsync(instCode, page, itemsPerPage);
                 ShowModel($"Page {page}", nextPage, timeUsed);
                 AssertModel(nextPage, itemsPerPage);
 
+                // These tests will fail if data changes will test run. Use TSTG
                 AssertDifferentPages(prevPage, nextPage);
 
                 prevPage = nextPage;
@@ -98,10 +100,10 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
         public async Task D_GetTagPage_ShouldGetSameTagPage()
         {
             const int page = 0;
-            const int itemsPerPage = 10000;
+            const int itemsPerPage = 50;
             TimeSpan timeUsed;
             TagModel prevPage;
-            var instCode = Config.InstCodeUnderTest_Large;
+            var instCode = Config.InstCodeUnderTest_Static;
 
             (prevPage, timeUsed) = await GetPageUsingClientWithAccessAsync(instCode, 0, itemsPerPage);
             ShowModel("Page 0", prevPage, timeUsed);
@@ -114,6 +116,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
                 ShowModel($"Page {page}, try #{idx}", nextPage, timeUsed);
                 AssertModel(nextPage, itemsPerPage);
 
+                // These tests will fail if data changes will test run. Use TSTG
                 AssertEqualPages(prevPage, nextPage);
 
                 prevPage = nextPage;
@@ -128,7 +131,7 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
             TimeSpan timeUsed;
             TagModel prevPage;
             var page = 10;
-            var instCode = Config.RandomInstCodeUnderTest;
+            var instCode = Config.InstCodeUnderTest_Small;
 
             (prevPage, timeUsed) = await GetPageUsingClientWithAccessAsync(instCode, page, itemsPerPage);
             ShowModel($"Page {page}", prevPage, timeUsed);
@@ -155,6 +158,8 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
 
             var tagsPrevPage = prevPage.Tags.Select(tagData => helper.GetUniqeKeyForTag(tagData)).Distinct().ToList();
             var tagsNextPage = nextPage.Tags.Select(tagData => helper.GetUniqeKeyForTag(tagData)).Distinct().ToList();
+
+            Assert.AreEqual(tagsPrevPage.Count, tagsNextPage.Count);
 
             // all items on prev and next page be equal => 
             Assert.AreEqual(tagsPrevPage.Count, tagsNextPage.Count);

@@ -54,7 +54,8 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
                            AND pi.isvoided = 'N'
                            AND((PI.CLEAREDAT IS NULL) OR(PI.REJECTEDAT IS NOT NULL)))
                       AS ""{s_punchCount}"",
-                   FT.FORMULARTYPE  AS ""{s_formularType}""
+                   FT.FORMULARTYPE AS ""{s_formularType}"",
+                   FT.FORMULARTYPE_ID
               FROM procosys.tag t
                    INNER JOIN procosys.project pr
                       ON pr.PROJECT_ID = t.project_id
@@ -113,7 +114,8 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
                            AND pi.isvoided = 'N'
                            AND ((PI.CLEAREDAT IS NULL) OR (PI.REJECTEDAT IS NOT NULL)))
                       AS ""{s_punchCount}"",
-                   FT.FORMULARTYPE  AS ""{s_formularType}""
+                   FT.FORMULARTYPE AS ""{s_formularType}"",
+                   FT.FORMULARTYPE_ID
               FROM procosys.tag t
                    INNER JOIN procosys.project pr
                       ON pr.PROJECT_ID = t.project_id
@@ -381,12 +383,14 @@ namespace Equinor.ProCoSys.DbView.WebApi.Controllers.ThreeDEcoTag
             try
             {
                 var strSql = s_tagQuery.Replace(s_instCodeToken, installationCode);
+                // must order by all columns which make a row unique. This to make sure pagination is working
                 strSql += 
                     $@"
                         ORDER BY TAG_ID,
                         PROJECT_ID,
                         COMMPKG_ID,
-                        RESPONSIBLE_ID
+                        RESPONSIBLE_ID,
+                        FORMULARTYPE_ID
                     OFFSET {currentPage * itemsPerPage} ROWS FETCH NEXT {itemsPerPage} ROWS ONLY";
                 
                 var stopWatch = new Stopwatch();
