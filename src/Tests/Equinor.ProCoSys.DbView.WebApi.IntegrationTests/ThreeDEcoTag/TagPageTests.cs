@@ -67,7 +67,9 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
             Assert.IsTrue(page >= 3);
         }
 
-        [TestCategory("All")]
+        [TestCategory("Local")]
+        [TestCategory("Prod")]
+        // Dont run in test yet. Correct data misses there
         [TestMethod]
         public async Task C2_GetTagPage_ShouldGetDifferentTagPages()
         {
@@ -95,7 +97,9 @@ namespace Equinor.ProCoSys.DbView.WebApi.IntegrationTests.ThreeDEcoTag
             }
         }
 
-        [TestCategory("All")]
+        [TestCategory("Local")]
+        [TestCategory("Prod")]
+        // Dont run in test yet. Correct data misses there
         [TestMethod]
         public async Task D_GetTagPage_ShouldGetSameTagPage()
         {
