@@ -1,0 +1,6 @@
+@Equinor.ProCoSys.Completion.DbSyncToPCS4.WebApi_HostAddress = http://localhost:5184
+
+GET {{Equinor.ProCoSys.Completion.DbSyncToPCS4.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
