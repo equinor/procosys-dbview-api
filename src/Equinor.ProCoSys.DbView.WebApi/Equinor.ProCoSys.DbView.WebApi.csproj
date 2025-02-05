@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <UserSecretsId>f215e156-670b-4576-9d02-f25143994d9b</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <ApplicationInsightsResourceId>/subscriptions/343069e3-ceaa-4256-bdc8-49fa3646c1c4/resourcegroups/pcs-dbview-dev-rg/providers/microsoft.insights/components/pcs-pres-dev-ai</ApplicationInsightsResourceId>
